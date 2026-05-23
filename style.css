@@ -1,0 +1,1146 @@
+/* CSS Variables for the redesigned Soft Pastel Ocean Breeze Theme */
+:root {
+  --bg-gradient: radial-gradient(circle at center, #F0F4F8 0%, #D9E2EC 100%);
+  --text-dark: #102A43;      /* Deep soft indigo/slate */
+  --text-muted: #486581;     /* Soft slate grey */
+  --pastel-accent: #627D98;  /* Steel blue pastel */
+  --pastel-light-blue: #BCCCDC; /* Gentle sky-blue pastel */
+  --pastel-bg-card: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  --line-color: #BAC7D5;     /* Soft pastel border/line color */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Montserrat', Helvetica, Arial, sans-serif;
+  --glass-bg: rgba(240, 244, 248, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.9);
+}
+
+/* Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-dark);
+  background: var(--bg-gradient);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fullscreen Confetti Canvas */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 150;
+}
+
+/* Discreet Background Music Control - Relocated to Bottom-Left Corner */
+.music-btn {
+  position: fixed;
+  bottom: 40px;
+  left: 45px;
+  z-index: 100;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(16, 42, 67, 0.08);
+  transition: all 0.3s ease;
+}
+.music-btn:hover {
+  color: var(--text-dark);
+  box-shadow: 0 6px 20px rgba(16, 42, 67, 0.15);
+  transform: scale(1.05);
+}
+.music-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+.music-icon {
+  width: 20px;
+  height: 20px;
+}
+.music-icon.hidden {
+  display: none;
+}
+
+/* SECTION BASE STYLE */
+.section {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* SECTION 1: LANDING PAGE */
+.section-landing {
+  overflow: hidden;
+  background: var(--bg-gradient);
+  transition: filter 0.8s ease, opacity 0.8s ease;
+}
+
+.section-landing.hidden {
+  opacity: 0;
+  filter: blur(15px);
+  pointer-events: none;
+}
+
+/* Layout Corner Texts with Lines (Matching Poster Reference) */
+.corner-text {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.header-line {
+  display: inline-block;
+  height: 1px;
+  width: 45px;
+  background-color: var(--line-color);
+}
+
+.top-left {
+  top: 40px;
+  left: 45px;
+}
+
+.top-right {
+  top: 40px;
+  right: 45px;
+}
+
+.bottom-right {
+  bottom: 40px;
+  right: 45px;
+}
+
+
+
+/* Giant Background Poster Text "MAMAE" */
+.giant-bg-text {
+  position: absolute;
+  font-family: var(--font-sans);
+  font-size: 24vw;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--pastel-light-blue);
+  opacity: 0.35;
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  transform: translateY(-56%);
+  line-height: 1;
+}
+
+/* Main Interactive Card Structure */
+.card-wrapper {
+  width: 320px;
+  height: 460px;
+  perspective: 1500px;
+  z-index: 5;
+  margin-bottom: 25px;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+/* Flip state */
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Front Card: Clean Cutout Person, No Frame, No background */
+.card-front {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.mom-photo-cutout {
+  width: 100%;
+  height: calc(100% - 40px);
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(16, 42, 67, 0.15));
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.card-wrapper:hover .mom-photo-cutout {
+  transform: scale(1.04) translateY(-5px);
+}
+
+/* Pulsing text below image */
+.click-prompt {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 14px;
+  animation: pulseBreath 2s infinite ease-in-out;
+  text-align: center;
+  z-index: 10;
+}
+
+@keyframes pulseBreath {
+  0%, 100% { opacity: 0.45; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+/* Back Card: Restructured into a clean box, no paragraphs */
+.card-back {
+  background: var(--pastel-bg-card);
+  transform: rotateY(180deg);
+  padding: 35px 25px;
+  border-radius: 24px;
+  border: 1px solid rgba(188, 204, 220, 0.4);
+  box-shadow: 0 25px 55px rgba(16, 42, 67, 0.08);
+}
+
+.birthday-box-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.message-box {
+  border: 2px solid var(--text-dark);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 70%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(16, 42, 67, 0.02);
+}
+
+.birthday-title-only {
+  font-family: var(--font-serif);
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.box-hint {
+  font-size: 0.65rem;
+  color: var(--pastel-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 25px;
+  animation: pulseHint 2s infinite ease-in-out;
+  font-weight: 600;
+  text-align: center;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+
+/* INTERACTIVE POLAROID COLLAGE OVERLAY */
+.collage-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(217, 226, 236, 0.85); /* Ocean Breeze pastel overlay tint */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.collage-container.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Restyled Back button - Top-left, borderless arrow style */
+.btn-gather {
+  position: absolute;
+  top: 40px;
+  left: 45px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  z-index: 110;
+  transition: color 0.3s ease, transform 0.3s ease, opacity 0.4s ease;
+}
+
+.collage-container.active .btn-gather {
+  opacity: 1;
+}
+
+.btn-gather:hover {
+  color: var(--text-dark);
+  background: none;
+  transform: translateX(-4px);
+  box-shadow: none;
+}
+
+.btn-gather:active {
+  transform: translateX(-2px);
+}
+
+/* Polaroid Collage Pile */
+.collage-pile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+/* Individual Polaroid Card */
+.polaroid-card {
+  position: absolute;
+  background: #FFFFFF;
+  padding: 12px 12px 28px 12px;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(16, 42, 67, 0.12);
+  width: 224px;
+  height: 270px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  transform: scale(0) rotate(0deg) translate(0, 0);
+  opacity: 0;
+  transition: 
+    transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.6s ease,
+    box-shadow 0.3s ease;
+}
+
+.collage-container.active .polaroid-card {
+  opacity: 1;
+}
+
+.collage-container.active .polaroid-card:not(.focused):not(.dragging) {
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1);
+}
+
+/* Staggered Floating Idle Animations to make the pile feel alive */
+.polaroid-card.floating:nth-child(3n) {
+  animation: float-1 4.5s infinite ease-in-out;
+}
+.polaroid-card.floating:nth-child(3n+1) {
+  animation: float-2 5.5s infinite ease-in-out;
+}
+.polaroid-card.floating:nth-child(3n+2) {
+  animation: float-3 6.5s infinite ease-in-out;
+}
+
+/* Floating Animation Keyframes (offsets are added to original JS positions) */
+@keyframes float-1 {
+  0%, 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0); }
+  50% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(-6px); }
+}
+@keyframes float-2 {
+  0%, 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0); }
+  50% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(-4px) translateX(2px); }
+}
+@keyframes float-3 {
+  0%, 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0); }
+  50% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(-8px) rotate(calc(var(--rot) + 1.5deg)); }
+}
+
+/* Polaroid image viewport */
+.polaroid-img-wrapper {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  background-color: #F1F5F9;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.polaroid-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Custom Handwritten style for caption */
+.polaroid-caption {
+  font-family: 'Reenie Beanie', cursive;
+  font-size: 1.8rem;
+  color: #243B53;
+  margin-top: 10px;
+  line-height: 1;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Polaroid Card Hover Effects */
+.polaroid-card:hover:not(.focused):not(.dragging) {
+  animation: none !important;
+  z-index: 80 !important;
+  box-shadow: 0 15px 40px rgba(16, 42, 67, 0.24);
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1.05) !important;
+}
+
+/* Active dragging state - smooth, light, no transition delays */
+.polaroid-card.dragging {
+  transition: none !important;
+  transition-delay: 0s !important;
+  animation: none !important;
+  z-index: 950 !important;
+  cursor: grabbing;
+  box-shadow: 0 20px 45px rgba(16, 42, 67, 0.28) !important;
+  transform: scale(1.04) translate(var(--tx), var(--ty)) rotate(var(--rot)) !important;
+}
+
+/* Polaroid Dimming logic when one is zoomed/focused */
+.collage-pile.dimmed .polaroid-card:not(.focused) {
+  opacity: 0.18;
+  filter: blur(2px) grayscale(40%);
+  pointer-events: none;
+  animation: none !important;
+}
+
+/* Focused / Zoomed in Polaroid card */
+.polaroid-card.focused {
+  z-index: 1000 !important;
+  transition-delay: 0s !important;
+  animation: none !important;
+  transform: scale(1.65) translate(0, 0) rotate(0deg) !important;
+  box-shadow: 0 25px 65px rgba(16, 42, 67, 0.3);
+  cursor: zoom-out;
+}
+
+/* 3D Present Box Styling */
+.present-container {
+  perspective: 800px;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+  position: relative;
+  z-index: 5;
+}
+
+.present-cube {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-22deg) rotateY(45deg);
+  animation: cube-float 4s infinite ease-in-out;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+}
+
+@keyframes cube-float {
+  0%, 100% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(0);
+  }
+  50% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(-8px);
+  }
+}
+
+/* Present Jiggle Animation for interactive elements */
+.present-cube.jiggle {
+  animation: cube-jiggle 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+@keyframes cube-jiggle {
+  0%, 100% {
+    transform: rotateX(-22deg) rotateY(45deg) scale3d(1, 1, 1);
+  }
+  15% {
+    transform: rotateX(-26deg) rotateY(35deg) scale3d(1.18, 0.78, 1.18);
+  }
+  30% {
+    transform: rotateX(-16deg) rotateY(55deg) scale3d(0.82, 1.18, 0.82);
+  }
+  45% {
+    transform: rotateX(-24deg) rotateY(40deg) scale3d(1.08, 0.92, 1.08);
+  }
+  60% {
+    transform: rotateX(-20deg) rotateY(50deg) scale3d(0.95, 1.05, 0.95);
+  }
+  75% {
+    transform: rotateX(-22deg) rotateY(43deg) scale3d(1.02, 0.98, 1.02);
+  }
+  90% {
+    transform: rotateX(-22deg) rotateY(47deg) scale3d(1.01, 0.99, 1.01);
+  }
+}
+
+/* Present Box Opening Animations */
+.present-cube.open .cube-face-top {
+  transform: rotateX(60deg) rotateY(45deg) translateZ(160px) translateY(-140px);
+  opacity: 0;
+  transition: transform 1.0s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s ease;
+}
+
+.present-cube.open .cube-face-front {
+  transform: rotateY(0deg) translateZ(50px) translateY(80px) scale3d(0.5, 0.5, 0.5);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+.present-cube.open .cube-face-left {
+  transform: rotateY(-90deg) translateZ(50px) translateY(80px) scale3d(0.5, 0.5, 0.5);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+.present-cube.open .cube-face-right {
+  transform: rotateY(90deg) translateZ(50px) translateY(80px) scale3d(0.5, 0.5, 0.5);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+.present-cube.open .cube-face-back {
+  transform: rotateY(180deg) translateZ(50px) translateY(80px) scale3d(0.5, 0.5, 0.5);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+.present-cube.open .cube-face-bottom {
+  transform: rotateX(-90deg) translateZ(50px) translateY(80px) scale3d(0.5, 0.5, 0.5);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+.cube-face {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--text-dark);
+  box-sizing: border-box;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+}
+
+/* 3D Face Placement and Lighting */
+.cube-face-front {
+  transform: rotateY(0deg) translateZ(50px);
+  background: linear-gradient(135deg, #f5d061 0%, #d4af37 60%, #b8860b 100%);
+  box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.25);
+}
+
+.cube-face-back {
+  transform: rotateY(180deg) translateZ(50px);
+  background: linear-gradient(135deg, #b58d1f 0%, #937114 60%, #72530c 100%);
+  box-shadow: inset -2px -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cube-face-left {
+  transform: rotateY(-90deg) translateZ(50px);
+  background: linear-gradient(135deg, #e5be3b 0%, #c49f25 60%, #a27e12 100%);
+  box-shadow: inset 2px -2px 8px rgba(255, 255, 255, 0.15);
+}
+
+.cube-face-right {
+  transform: rotateY(90deg) translateZ(50px);
+  background: linear-gradient(135deg, #c59b27 0%, #a37f1c 60%, #826210 100%);
+  box-shadow: inset -2px 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cube-face-top {
+  transform: rotateX(90deg) translateZ(50px);
+  background: linear-gradient(135deg, #fff3b3 0%, #f5d061 60%, #d4af37 100%);
+  transform-style: preserve-3d;
+}
+
+.cube-face-bottom {
+  transform: rotateX(-90deg) translateZ(50px);
+  background: #826210;
+}
+
+/* Ribbons around the faces */
+/* Front Face ribbon (Vertical) */
+.cube-face-front::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #ef5350, #e53935, #c62828);
+  border-left: 2px solid var(--text-dark);
+  border-right: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+/* Left Face ribbon (Vertical) */
+.cube-face-left::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #e53935, #c62828, #b71c1c);
+  border-left: 2px solid var(--text-dark);
+  border-right: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+/* Right Face ribbon (Vertical) */
+.cube-face-right::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #c62828, #b71c1c, #9e1a1a);
+  border-left: 2px solid var(--text-dark);
+  border-right: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+/* Back Face ribbon (Vertical) */
+.cube-face-back::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #b71c1c, #9e1a1a, #801010);
+  border-left: 2px solid var(--text-dark);
+  border-right: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+/* Top Face ribbons (Crossing) */
+.cube-face-top::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, #ef5350, #e53935, #c62828);
+  border-left: 2px solid var(--text-dark);
+  border-right: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+.cube-face-top::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 22px;
+  width: 100%;
+  transform: translateY(-50%);
+  background: linear-gradient(to bottom, #ef5350, #e53935, #c62828);
+  border-top: 2px solid var(--text-dark);
+  border-bottom: 2px solid var(--text-dark);
+  box-sizing: border-box;
+}
+
+/* 3D Bow Standing Perpendicular to Top Face */
+.cube-bow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80px;
+  height: 80px;
+  /* Rotate -90 around X-axis so it stands vertically perpendicular to top face */
+  transform: translate(-50%, -50%) rotateX(-90deg) translateZ(2px);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.bow-loop-3d {
+  position: absolute;
+  bottom: 40px; /* Center of the bow at the knot */
+  width: 32px;
+  height: 24px;
+  border: 2px solid var(--text-dark);
+  background: linear-gradient(135deg, #ff6b6b 0%, #e53935 80%, #b71c1c 100%);
+  box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.4);
+}
+
+.bow-loop-3d.loop-left {
+  right: 40px;
+  border-radius: 50% 50% 10% 50%;
+  transform-origin: bottom right;
+  transform: rotate(-18deg) translate(-2px, 0);
+}
+
+.bow-loop-3d.loop-right {
+  left: 40px;
+  border-radius: 50% 50% 50% 10%;
+  transform-origin: bottom left;
+  transform: rotate(18deg) translate(2px, 0);
+}
+
+.bow-knot-3d {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: 15px;
+  height: 15px;
+  background: linear-gradient(135deg, #ff8a80, #e53935);
+  border: 2px solid var(--text-dark);
+  border-radius: 50%;
+  transform: translate(-50%, 50%) translateZ(4px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.bow-tail-3d {
+  position: absolute;
+  top: 40px; /* Originates from center/knot */
+  width: 10px;
+  height: 30px;
+  background: linear-gradient(to bottom, #e53935, #b71c1c);
+  border: 2px solid var(--text-dark);
+  border-top: none;
+  border-radius: 0 0 3px 3px;
+  transform-origin: top center;
+}
+
+.bow-tail-3d.tail-left {
+  right: 42px;
+  transform: rotate(30deg) translateZ(1px);
+}
+
+.bow-tail-3d.tail-right {
+  left: 42px;
+  transform: rotate(-30deg) translateZ(1px);
+}
+
+/* Card back restructure edits */
+.birthday-box-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.birthday-title-only {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 5px;
+  z-index: 5;
+}
+
+/* Card Flip-Back Button */
+.card-back-btn-back {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 20;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.card-back-btn-back:hover {
+  color: var(--text-dark);
+  transform: translateX(-3px);
+}
+
+/* Letter Button - Top-Right */
+.btn-letter {
+  position: absolute;
+  top: 40px;
+  right: 45px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  z-index: 110;
+  transition: color 0.3s ease, transform 0.3s ease, opacity 0.4s ease;
+}
+
+.collage-container.active .btn-letter {
+  opacity: 1;
+}
+
+.btn-letter:hover {
+  color: var(--text-dark);
+  background: none;
+  transform: translateX(4px);
+  box-shadow: none;
+}
+
+.btn-letter:active {
+  transform: translateX(2px);
+}
+
+/* Private Message Letter Overlay styles */
+.letter-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(217, 226, 236, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1200; /* Higher than collage */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.letter-container.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.letter-container.hidden {
+  display: none;
+}
+
+.letter-card {
+  position: relative;
+  width: 480px;
+  height: 580px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding: 35px;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: scale(0.05) translateY(80px);
+  pointer-events: none;
+  transition: opacity 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.letter-card.active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+/* Letter present wrapper styles */
+.letter-present-wrapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.letter-present-wrapper.fade-out {
+  opacity: 0;
+  transform: scale(0.9) translateY(15px);
+  pointer-events: none;
+}
+
+.letter-present-hint {
+  font-family: var(--font-sans);
+  text-align: center;
+  font-size: 1.15rem;
+  color: var(--text-dark);
+  line-height: 1.4;
+  margin-bottom: 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.letter-present-hint.fade-out {
+  opacity: 0;
+  transform: scale(0.9) translateY(-10px);
+  pointer-events: none;
+}
+
+.letter-present-hint span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--pastel-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 8px;
+  display: inline-block;
+  animation: pulseHint 2s infinite ease-in-out;
+}
+
+.interactive-present .present-cube:hover:not(.jiggle):not(.open) {
+  transform: rotateX(-22deg) rotateY(45deg) scale(1.06) !important;
+  box-shadow: 0 20px 40px rgba(16, 42, 67, 0.15);
+}
+
+.letter-svg-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.letter-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--text-dark);
+  box-sizing: border-box;
+}
+
+.letter-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+
+.letter-text {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  overflow-y: auto;
+  max-height: 70%;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Custom scrollbar for letter text */
+.letter-text::-webkit-scrollbar {
+  width: 6px;
+}
+.letter-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+.letter-text::-webkit-scrollbar-thumb {
+  background: var(--line-color);
+  border-radius: 3px;
+}
+
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .section {
+    padding: 30px 20px;
+  }
+  
+  .top-left {
+    top: 25px;
+    left: 25px;
+  }
+  .top-right {
+    top: 25px;
+    right: 25px;
+  }
+  .bottom-right {
+    bottom: 25px;
+    right: 25px;
+  }
+
+  .music-btn {
+    bottom: 25px;
+    left: 25px;
+  }
+
+  .header-line {
+    width: 25px;
+  }
+
+  .giant-bg-text {
+    font-size: 26vw;
+    transform: translateY(-50%);
+  }
+
+  .card-wrapper {
+    width: 270px;
+    height: 400px;
+  }
+  
+  .message-box {
+    padding: 30px 15px;
+  }
+  
+  .birthday-title-only {
+    font-size: 1.8rem;
+  }
+
+  .polaroid-card {
+    width: 174px;
+    height: 220px;
+    padding: 8px 8px 22px 8px;
+  }
+  .polaroid-img-wrapper {
+    width: 158px;
+    height: 158px;
+  }
+  .polaroid-caption {
+    font-size: 1.4rem;
+    margin-top: 6px;
+  }
+  .polaroid-card.focused {
+    transform: scale(1.8) translate(0, 0) rotate(0deg) !important;
+  }
+}
+
+@media (max-height: 550px) {
+  .corner-text {
+    display: none;
+  }
+  .giant-bg-text {
+    display: none;
+  }
+  .card-wrapper {
+    height: 290px;
+    width: 200px;
+  }
+  .message-box {
+    padding: 10px;
+    height: 90%;
+  }
+  .birthday-title-only {
+    font-size: 1.3rem;
+  }
+  .box-hint {
+    display: none;
+  }
+}

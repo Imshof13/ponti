@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday, Mama!</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Fullscreen Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Background Music Control (Relocated to bottom-left via CSS) -->
+  <button id="music-toggle" class="music-btn hidden" aria-label="Toggle Music">
+    <svg class="music-icon play" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+    </svg>
+    <svg class="music-icon mute hidden" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.03c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    </svg>
+  </button>
+
+  <!-- SECTION 1: LANDING PAGE -->
+  <section class="section section-landing" id="section-landing">
+    <!-- Top Left: From Ponti -->
+    <div class="corner-text top-left">
+      <span class="header-label">FROM PONTI</span>
+      <span class="header-line"></span>
+    </div>
+
+    <!-- Top Right: To Mama -->
+    <div class="corner-text top-right">
+      <span class="header-line"></span>
+      <span class="header-label">TO MAMA</span>
+    </div>
+
+    <!-- Giant Poster Background Text -->
+    <div class="giant-bg-text">MAMAE</div>
+
+    <!-- Main Interactive Card Frame -->
+    <div class="card-wrapper" id="card-wrapper">
+      <div class="card-inner" id="card-inner">
+        
+        <!-- Card Front: Mom's Portrait Cutout -->
+        <div class="card-front" id="card-front">
+          <img src="assets/mom_portrait_white_bg.png" alt="Mom's Portrait" class="mom-photo-cutout" id="mom-photo">
+          <p class="click-prompt" id="click-prompt">click the photo for the experience</p>
+        </div>
+
+        <!-- Card Back: Happy Birthday Message Box (Clickable to explode memories) -->
+        <div class="card-back" id="card-back">
+          <!-- Flip Back Button -->
+          <button class="card-back-btn-back" id="btn-flip-back" aria-label="Flip back to front">
+            <svg class="arrow-left-icon" viewBox="0 0 24 24" width="14" height="14">
+              <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            <span>back</span>
+          </button>
+
+          <div class="birthday-box-content">
+            <h1 class="birthday-title-only">Happy Birthday</h1>
+            <div class="present-container interactive-present">
+              <div class="present-cube">
+                <div class="cube-face cube-face-front"></div>
+                <div class="cube-face cube-face-back"></div>
+                <div class="cube-face cube-face-left"></div>
+                <div class="cube-face cube-face-right"></div>
+                <div class="cube-face cube-face-top">
+                  <div class="cube-bow">
+                    <div class="bow-loop-3d loop-left"></div>
+                    <div class="bow-loop-3d loop-right"></div>
+                    <div class="bow-knot-3d"></div>
+                    <div class="bow-tail-3d tail-left"></div>
+                    <div class="bow-tail-3d tail-right"></div>
+                  </div>
+                </div>
+                <div class="cube-face cube-face-bottom"></div>
+              </div>
+            </div>
+            <p class="box-hint">click the box to open memories</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Right: Date -->
+    <div class="corner-text bottom-right">
+      <span class="header-line"></span>
+      <span class="header-label">29/05/1970</span>
+    </div>
+    
+
+  </section>
+
+  <!-- Scattered Polaroid Collage Overlay (Revealed after clicking the birthday card) -->
+  <div class="collage-container hidden" id="collage-container">
+    
+    <!-- Back to Greeting Card Button (Moved to top-left, borderless arrow style) -->
+    <button class="btn-gather" id="btn-gather" aria-label="Go Back to Greeting Card">
+      <svg class="arrow-left-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      <span>back</span>
+    </button>
+
+    <!-- Next Button (Balanced in the top-right) -->
+    <button class="btn-letter" id="btn-open-letter" aria-label="Read Letter for Mom">
+      <span>next</span>
+      <svg class="arrow-right-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+      </svg>
+    </button>
+
+    <!-- Polaroid Pile -->
+    <div class="collage-pile" id="collage-pile">
+      
+      <div class="polaroid-card" data-index="0">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/mom_flowers.png" alt="Flowers for Mom">
+        </div>
+        <div class="polaroid-caption">A beautiful bloom for a beautiful mom.</div>
+      </div>
+      
+      <div class="polaroid-card" data-index="1">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/birthday_cake.png" alt="Birthday Cake">
+        </div>
+        <div class="polaroid-caption">Sweet celebrations and delicious wishes.</div>
+      </div>
+      
+      <div class="polaroid-card" data-index="2">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/family_walk.png" alt="Family Walk">
+        </div>
+        <div class="polaroid-caption">Warm steps, hand in hand.</div>
+      </div>
+      
+      <div class="polaroid-card" data-index="3">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/mom_cooking.png" alt="Mom Cooking">
+        </div>
+        <div class="polaroid-caption">Baking love, laughter, and sweet moments.</div>
+      </div>
+      
+      <div class="polaroid-card" data-index="4">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/mom_garden.png" alt="Mom's Garden">
+        </div>
+        <div class="polaroid-caption">Peace and joy in the quiet garden.</div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Private Message Letter Overlay -->
+  <div class="letter-container hidden" id="letter-container">
+    <!-- Close Letter Button -->
+    <button class="btn-gather" id="btn-close-letter" aria-label="Back to Memories">
+      <svg class="arrow-left-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      <span>back</span>
+    </button>
+
+    <!-- Present Box to unwrap before showing letter -->
+    <div class="letter-present-wrapper" id="letter-present-wrapper">
+      <h3 class="letter-present-hint" id="letter-present-hint">
+        A special gift for Mama...<br><span>Click the gift to open!</span>
+      </h3>
+      <div class="present-container interactive-present" id="letter-present-box">
+        <div class="present-cube">
+          <div class="cube-face cube-face-front"></div>
+          <div class="cube-face cube-face-back"></div>
+          <div class="cube-face cube-face-left"></div>
+          <div class="cube-face cube-face-right"></div>
+          <div class="cube-face cube-face-top">
+            <div class="cube-bow">
+              <div class="bow-loop-3d loop-left"></div>
+              <div class="bow-loop-3d loop-right"></div>
+              <div class="bow-knot-3d"></div>
+              <div class="bow-tail-3d tail-left"></div>
+              <div class="bow-tail-3d tail-right"></div>
+            </div>
+          </div>
+          <div class="cube-face cube-face-bottom"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Letter Card Frame -->
+    <div class="letter-card" id="letter-card">
+      <svg class="letter-svg-bg" id="letter-svg-bg" viewBox="-20 -20 540 640" preserveAspectRatio="none">
+        <!-- Inner straight-edged card border -->
+        <rect x="0" y="0" width="500" height="600" rx="6" fill="white" stroke="#102A43" stroke-width="3" />
+        <!-- Outer wavy/scalloped paper outline (generated dynamically in JS) -->
+        <path id="wavy-border-path" fill="none" stroke="#102A43" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      
+      <div class="letter-content">
+        <h2 class="letter-title">A Letter for Mama</h2>
+        <div class="letter-text">
+          <p>Dearest Mama,</p>
+          <p style="margin-top: 12px;">Happy Birthday to the most wonderful mother in the world! Thank you for your endless love, your patience, and the warmth you bring to our lives.</p>
+          <p style="margin-top: 12px;">Your smile lights up our days, and your loving heart fills our home. Today is all about celebrating you, your journey, and the beautiful memories we share together.</p>
+          <p style="margin-top: 12px;">We are so grateful for everything you do. May this year bring you as much joy, peace, and happiness as you have always given us.</p>
+          <p style="margin-top: 24px; font-weight: 600;">With all our love,</p>
+          <p style="margin-top: 6px; font-style: italic;">From Ponti</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
