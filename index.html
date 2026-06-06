@@ -4,12 +4,1143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Happy Birthday, Mama!</title>
+  <meta name="description" content="A beautiful and interactive digital greeting card, memory gallery, and letter filled with love and warmth for Mama's birthday. Created with interactive polaroid photos and custom sound.">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <style>
+    .section-landing .header-line {
+      display: none;
+    }
+
+    .section-landing .corner-text {
+      gap: 0;
+    }
+
+    .section-landing .bottom-left {
+      bottom: 40px;
+      left: 45px;
+    }
+
+    .present-container {
+      --gift-size: 104px;
+      --gift-half: 52px;
+      width: calc(var(--gift-size) + 48px);
+      height: calc(var(--gift-size) + 58px);
+      display: grid;
+      place-items: center;
+      margin: 18px auto 10px;
+      perspective: 760px;
+      cursor: pointer;
+    }
+
+    .letter-present-wrapper .present-container {
+      --gift-size: 132px;
+      --gift-half: 66px;
+      width: calc(var(--gift-size) + 58px);
+      height: calc(var(--gift-size) + 72px);
+      margin-top: 22px;
+    }
+
+    .present-cube {
+      position: relative;
+      width: var(--gift-size);
+      height: var(--gift-size);
+      transform-style: preserve-3d;
+      transform: rotateX(-18deg) rotateY(32deg);
+      transition: transform 320ms ease;
+      animation: presentFloat 3s ease-in-out infinite;
+    }
+
+    .present-container:hover .present-cube {
+      transform: rotateX(-22deg) rotateY(42deg) translateY(-4px);
+    }
+
+    .cube-face {
+      position: absolute;
+      inset: 0;
+      width: var(--gift-size);
+      height: var(--gift-size);
+      border: 2px solid rgba(106, 49, 95, 0.35);
+      border-radius: 6px;
+      background:
+        linear-gradient(90deg, transparent 42%, #f7d85d 42% 58%, transparent 58%),
+        linear-gradient(#f48ab8, #e95f9e);
+      box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.18);
+      box-sizing: border-box;
+    }
+
+    .cube-face-front {
+      transform: translateZ(var(--gift-half));
+    }
+
+    .cube-face-back {
+      transform: rotateY(180deg) translateZ(var(--gift-half));
+    }
+
+    .cube-face-left {
+      transform: rotateY(-90deg) translateZ(var(--gift-half));
+      filter: brightness(0.86);
+    }
+
+    .cube-face-right {
+      transform: rotateY(90deg) translateZ(var(--gift-half));
+      filter: brightness(0.94);
+    }
+
+    .cube-face-top {
+      transform: rotateX(90deg) translateZ(var(--gift-half));
+      background:
+        linear-gradient(90deg, transparent 42%, #f7d85d 42% 58%, transparent 58%),
+        linear-gradient(0deg, transparent 42%, #f7d85d 42% 58%, transparent 58%),
+        linear-gradient(#ff9bc8, #ee72ab);
+    }
+
+    .cube-face-bottom {
+      transform: rotateX(-90deg) translateZ(var(--gift-half));
+      filter: brightness(0.72);
+    }
+
+    .cube-bow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 70%;
+      height: 70%;
+      transform: translate(-50%, -62%) rotateX(-90deg) translateZ(18px);
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .bow-loop-3d,
+    .bow-knot-3d,
+    .bow-tail-3d {
+      position: absolute;
+      background: #f7d85d;
+      border: 2px solid rgba(106, 49, 95, 0.28);
+      box-sizing: border-box;
+    }
+
+    .bow-loop-3d {
+      top: 7%;
+      width: 42%;
+      height: 42%;
+      border-radius: 50% 50% 45% 45%;
+      box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35);
+    }
+
+    .loop-left {
+      left: 4%;
+      transform: rotate(-28deg);
+    }
+
+    .loop-right {
+      right: 4%;
+      transform: rotate(28deg);
+    }
+
+    .bow-knot-3d {
+      left: 50%;
+      top: 28%;
+      width: 22%;
+      height: 22%;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .bow-tail-3d {
+      top: 48%;
+      width: 22%;
+      height: 36%;
+      border-radius: 4px;
+    }
+
+    .tail-left {
+      left: 28%;
+      transform: rotate(18deg);
+    }
+
+    .tail-right {
+      right: 28%;
+      transform: rotate(-18deg);
+    }
+
+    @keyframes presentFloat {
+      0%, 100% {
+        translate: 0 0;
+      }
+
+      50% {
+        translate: 0 -7px;
+      }
+    }
+
+    .collage-pile {
+      position: relative;
+      width: min(100vw, 1180px);
+      height: min(78vh, 720px);
+      margin: 0 auto;
+    }
+
+    .collage-pile .polaroid-card {
+      position: absolute;
+      transform-origin: center;
+      transition: transform 220ms ease, z-index 0ms 220ms;
+    }
+
+    .collage-pile .polaroid-card:hover {
+      z-index: 20;
+      transform: translate(var(--x), var(--y)) rotate(0deg) scale(1.08) !important;
+      transition: transform 220ms ease;
+    }
+
+    .collage-pile .polaroid-card:nth-child(1) { --x: 4vw; --y: 6vh; left: 2%; top: 4%; transform: translate(var(--x), var(--y)) rotate(-15deg); }
+    .collage-pile .polaroid-card:nth-child(2) { --x: 28vw; --y: 2vh; left: 3%; top: 3%; transform: translate(var(--x), var(--y)) rotate(10deg); }
+    .collage-pile .polaroid-card:nth-child(3) { --x: 54vw; --y: 7vh; left: 0; top: 2%; transform: translate(var(--x), var(--y)) rotate(-7deg); }
+    .collage-pile .polaroid-card:nth-child(4) { --x: 76vw; --y: 4vh; right: 3%; top: 5%; transform: translate(0, var(--y)) rotate(13deg); }
+    .collage-pile .polaroid-card:nth-child(5) { --x: 12vw; --y: 28vh; left: 1%; top: 2%; transform: translate(var(--x), var(--y)) rotate(8deg); }
+    .collage-pile .polaroid-card:nth-child(6) { --x: 38vw; --y: 24vh; left: 0; top: 4%; transform: translate(var(--x), var(--y)) rotate(-13deg); }
+    .collage-pile .polaroid-card:nth-child(7) { --x: 64vw; --y: 29vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(16deg); }
+    .collage-pile .polaroid-card:nth-child(8) { --x: 80vw; --y: 25vh; right: 2%; top: 0; transform: translate(0, var(--y)) rotate(-9deg); }
+    .collage-pile .polaroid-card:nth-child(9) { --x: 3vw; --y: 52vh; left: 2%; top: 0; transform: translate(var(--x), var(--y)) rotate(12deg); }
+    .collage-pile .polaroid-card:nth-child(10) { --x: 25vw; --y: 49vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(-6deg); }
+    .collage-pile .polaroid-card:nth-child(11) { --x: 49vw; --y: 54vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(9deg); }
+    .collage-pile .polaroid-card:nth-child(12) { --x: 72vw; --y: 50vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(-14deg); }
+    .collage-pile .polaroid-card:nth-child(13) { --x: 16vw; --y: 11vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(18deg); }
+    .collage-pile .polaroid-card:nth-child(14) { --x: 45vw; --y: 13vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(-18deg); }
+    .collage-pile .polaroid-card:nth-child(15) { --x: 59vw; --y: 39vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(7deg); }
+    .collage-pile .polaroid-card:nth-child(16) { --x: 32vw; --y: 58vh; left: 0; top: 0; transform: translate(var(--x), var(--y)) rotate(15deg); }
+
+    .present-container {
+      transform-style: preserve-3d;
+    }
+
+    .present-container:active .present-cube {
+      animation: presentJiggle 420ms ease both;
+    }
+
+    .letter-card {
+      position: relative;
+    }
+
+    .letter-card-back {
+      position: absolute;
+      z-index: 5;
+      top: 18px;
+      left: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      background: rgba(255, 255, 255, 0.82);
+      color: #6A315F;
+      font-family: "Montserrat", sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: lowercase;
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(106, 49, 95, 0.14);
+    }
+
+    .letter-card-back:hover {
+      background: #fff;
+      transform: translateX(-2px);
+    }
+
+    @keyframes presentJiggle {
+      0%, 100% { transform: rotateX(-18deg) rotateY(32deg) translateX(0); }
+      20% { transform: rotateX(-18deg) rotateY(22deg) translateX(-5px); }
+      40% { transform: rotateX(-18deg) rotateY(43deg) translateX(5px); }
+      60% { transform: rotateX(-18deg) rotateY(26deg) translateX(-3px); }
+      80% { transform: rotateX(-18deg) rotateY(38deg) translateX(3px); }
+    }
+
+    @media (max-width: 720px) {
+      .collage-pile {
+        width: 100vw;
+        height: 174vh;
+      }
+
+      .collage-pile .polaroid-card:nth-child(1) { --x: 4vw; --y: 6vh; }
+      .collage-pile .polaroid-card:nth-child(2) { --x: 48vw; --y: 4vh; }
+      .collage-pile .polaroid-card:nth-child(3) { --x: 9vw; --y: 24vh; }
+      .collage-pile .polaroid-card:nth-child(4) { --x: 48vw; --y: 27vh; }
+      .collage-pile .polaroid-card:nth-child(5) { --x: 2vw; --y: 45vh; }
+      .collage-pile .polaroid-card:nth-child(6) { --x: 50vw; --y: 48vh; }
+      .collage-pile .polaroid-card:nth-child(7) { --x: 12vw; --y: 67vh; }
+      .collage-pile .polaroid-card:nth-child(8) { --x: 47vw; --y: 70vh; }
+      .collage-pile .polaroid-card:nth-child(9) { --x: 5vw; --y: 89vh; }
+      .collage-pile .polaroid-card:nth-child(10) { --x: 48vw; --y: 92vh; }
+      .collage-pile .polaroid-card:nth-child(11) { --x: 18vw; --y: 108vh; }
+      .collage-pile .polaroid-card:nth-child(12) { --x: 49vw; --y: 113vh; }
+      .collage-pile .polaroid-card:nth-child(13) { --x: 3vw; --y: 128vh; }
+      .collage-pile .polaroid-card:nth-child(14) { --x: 50vw; --y: 133vh; }
+      .collage-pile .polaroid-card:nth-child(15) { --x: 15vw; --y: 149vh; }
+      .collage-pile .polaroid-card:nth-child(16) { --x: 47vw; --y: 154vh; }
+    }
+
+    .collage-pile .polaroid-card:nth-child(1) { transform: translate(var(--x), var(--y)) rotate(-15deg) !important; }
+    .collage-pile .polaroid-card:nth-child(2) { transform: translate(var(--x), var(--y)) rotate(10deg) !important; }
+    .collage-pile .polaroid-card:nth-child(3) { transform: translate(var(--x), var(--y)) rotate(-7deg) !important; }
+    .collage-pile .polaroid-card:nth-child(4) { transform: translate(var(--x), var(--y)) rotate(13deg) !important; }
+    .collage-pile .polaroid-card:nth-child(5) { transform: translate(var(--x), var(--y)) rotate(8deg) !important; }
+    .collage-pile .polaroid-card:nth-child(6) { transform: translate(var(--x), var(--y)) rotate(-13deg) !important; }
+    .collage-pile .polaroid-card:nth-child(7) { transform: translate(var(--x), var(--y)) rotate(16deg) !important; }
+    .collage-pile .polaroid-card:nth-child(8) { transform: translate(var(--x), var(--y)) rotate(-9deg) !important; }
+    .collage-pile .polaroid-card:nth-child(9) { transform: translate(var(--x), var(--y)) rotate(12deg) !important; }
+    .collage-pile .polaroid-card:nth-child(10) { transform: translate(var(--x), var(--y)) rotate(-6deg) !important; }
+    .collage-pile .polaroid-card:nth-child(11) { transform: translate(var(--x), var(--y)) rotate(9deg) !important; }
+    .collage-pile .polaroid-card:nth-child(12) { transform: translate(var(--x), var(--y)) rotate(-14deg) !important; }
+    .collage-pile .polaroid-card:nth-child(13) { transform: translate(var(--x), var(--y)) rotate(18deg) !important; }
+    .collage-pile .polaroid-card:nth-child(14) { transform: translate(var(--x), var(--y)) rotate(-18deg) !important; }
+    .collage-pile .polaroid-card:nth-child(15) { transform: translate(var(--x), var(--y)) rotate(7deg) !important; }
+    .collage-pile .polaroid-card:nth-child(16) { transform: translate(var(--x), var(--y)) rotate(15deg) !important; }
+
+    .collage-pile .polaroid-card:hover {
+      transform: translate(var(--x), var(--y)) rotate(0deg) scale(1.08) !important;
+    }
+
+    /* Final overrides: keep gallery inside the viewport and make hover predictable. */
+    .collage-pile {
+      overflow: visible;
+      box-sizing: border-box;
+      padding: 34px 28px;
+    }
+
+    .collage-pile .polaroid-card {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      right: auto !important;
+      width: 170px !important;
+      height: auto !important;
+      padding: 10px 10px 14px 10px !important;
+      border-radius: 4px !important;
+      background: #ffffff !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+      transform: translate(-50%, -50%) scale(0) rotate(0deg) !important;
+      opacity: 0 !important;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease, box-shadow 0.3s ease !important;
+      will-change: transform;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+
+    .polaroid-img-wrapper {
+      width: 100% !important;
+      height: 150px !important;
+      overflow: hidden !important;
+      background-color: #FFF2D6 !important;
+      border: 1px solid rgba(233, 95, 158, 0.12) !important;
+      box-sizing: border-box !important;
+    }
+
+    .polaroid-caption {
+      font-family: 'Reenie Beanie', cursive !important;
+      font-size: 1.45rem !important;
+      color: #67375F !important;
+      margin-top: 8px !important;
+      line-height: 1 !important;
+      text-align: center !important;
+      width: 100% !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* Reliable 2D gift: clean box, ribbon, bow, and a click jiggle. */
+    .present-container {
+      width: 150px !important;
+      height: 150px !important;
+      perspective: none !important;
+      transform-style: flat !important;
+    }
+
+    .letter-present-wrapper .present-container {
+      width: 184px !important;
+      height: 184px !important;
+    }
+
+    .present-cube {
+      position: relative !important;
+      width: 112px !important;
+      height: 98px !important;
+      margin-top: 28px !important;
+      transform: none !important;
+      transform-style: flat !important;
+      animation: giftFloat2d 2.8s ease-in-out infinite !important;
+    }
+
+    .letter-present-wrapper .present-cube {
+      width: 140px !important;
+      height: 120px !important;
+    }
+
+    .present-container:hover .present-cube {
+      transform: translateY(-4px) !important;
+    }
+
+    .present-container:active .present-cube {
+      animation: giftJiggle2d 430ms ease both !important;
+    }
+
+    .cube-face {
+      display: none !important;
+      box-sizing: border-box;
+    }
+
+    .cube-face-front,
+    .cube-face-top {
+      display: block !important;
+      position: absolute !important;
+      left: 0 !important;
+      width: 100% !important;
+      border: 2px solid rgba(106, 49, 95, 0.35) !important;
+      border-radius: 8px !important;
+      transform: none !important;
+      filter: none !important;
+      background:
+        linear-gradient(90deg, transparent 42%, #f7d85d 42% 58%, transparent 58%),
+        linear-gradient(#f48ab8, #e95f9e) !important;
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.22), 0 14px 30px rgba(106, 49, 95, 0.2) !important;
+    }
+
+    .cube-face-front {
+      bottom: 0 !important;
+      height: 78% !important;
+    }
+
+    .cube-face-top {
+      top: 0 !important;
+      height: 28% !important;
+      background:
+        linear-gradient(90deg, transparent 42%, #f7d85d 42% 58%, transparent 58%),
+        linear-gradient(#ff9bc8, #ee72ab) !important;
+      z-index: 2;
+    }
+
+    .cube-bow {
+      position: absolute !important;
+      left: 50% !important;
+      top: -34px !important;
+      width: 88px !important;
+      height: 58px !important;
+      transform: translateX(-50%) !important;
+      transform-style: flat !important;
+      z-index: 4;
+    }
+
+    .letter-present-wrapper .cube-bow {
+      top: -42px !important;
+      width: 110px !important;
+      height: 72px !important;
+    }
+
+    .bow-loop-3d,
+    .bow-knot-3d,
+    .bow-tail-3d {
+      display: block !important;
+      position: absolute !important;
+      background: #f7d85d !important;
+      border: 2px solid rgba(106, 49, 95, 0.28) !important;
+      box-sizing: border-box !important;
+    }
+
+    .bow-loop-3d {
+      top: 4px !important;
+      width: 38px !important;
+      height: 34px !important;
+      border-radius: 50% 50% 48% 48% !important;
+    }
+
+    .loop-left {
+      left: 4px !important;
+      transform: rotate(-28deg) !important;
+    }
+
+    .loop-right {
+      right: 4px !important;
+      transform: rotate(28deg) !important;
+    }
+
+    .bow-knot-3d {
+      left: 50% !important;
+      top: 22px !important;
+      width: 22px !important;
+      height: 22px !important;
+      border-radius: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 5;
+    }
+
+    .bow-tail-3d {
+      top: 38px !important;
+      width: 18px !important;
+      height: 26px !important;
+      border-radius: 4px !important;
+    }
+
+    .tail-left {
+      left: 31px !important;
+      transform: rotate(16deg) !important;
+    }
+
+    .tail-right {
+      right: 31px !important;
+      transform: rotate(-16deg) !important;
+    }
+
+    @keyframes giftFloat2d {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @keyframes giftJiggle2d {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      20% { transform: translateX(-6px) rotate(-4deg); }
+      40% { transform: translateX(6px) rotate(4deg); }
+      60% { transform: translateX(-4px) rotate(-3deg); }
+      80% { transform: translateX(4px) rotate(3deg); }
+    }
+
+    @media (max-width: 720px) {
+      .collage-pile {
+        height: 100vh;
+        padding: 10px 10px;
+      }
+
+      .collage-pile .polaroid-card {
+        width: 120px !important;
+        height: auto !important;
+        padding: 7px 7px 10px 7px !important;
+      }
+
+      .polaroid-img-wrapper {
+        height: 104px !important;
+      }
+
+      .polaroid-caption {
+        font-size: 1.15rem !important;
+        margin-top: 5px !important;
+      }
+    }
+
+    .interactive-present .present-cube:hover:not(.jiggle):not(.open) {
+      transform: translateY(-4px) scale(1.04) !important;
+      filter: drop-shadow(0 22px 28px rgba(233, 95, 158, 0.24)) !important;
+    }
+
+    .present-cube.jiggle {
+      animation: giftJiggle2d 430ms ease both !important;
+    }
+
+    .present-cube.open {
+      animation: none !important;
+      transform: translateY(-8px) scale(0.92) !important;
+      opacity: 0;
+      transition: transform 520ms ease, opacity 520ms ease;
+    }
+
+    .present-cube.open .cube-face,
+    .present-cube.open .cube-face-top,
+    .present-cube.open .cube-face-front {
+      transform: none !important;
+    }
+
+    .letter-actions {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .letter-next-button {
+      border: 0;
+      background: rgba(255, 255, 255, 0.84);
+      color: #6A315F;
+      font-family: "Montserrat", sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(106, 49, 95, 0.14);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .letter-next-button:hover {
+      background: #fff;
+      transform: translateX(3px);
+    }
+
+    .thank-you-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(rgba(25, 10, 24, 0.25), rgba(25, 10, 24, 0.25)), url("assets/keluarga_wide.png") center / cover no-repeat;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+      overflow: hidden;
+    }
+
+    .thank-you-container.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .thank-you-container.hidden {
+      display: none;
+    }
+
+    .thank-you-title {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: min(12vw, 4.5rem);
+      color: #ffffff;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.82), 0 0 40px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      font-weight: 700;
+      letter-spacing: 2px;
+      pointer-events: none;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* Stable gallery active position: one transform source. */
+    .collage-container.active .collage-pile .polaroid-card:not(.focused):not(.dragging) {
+      left: 50% !important;
+      top: 50% !important;
+      right: auto !important;
+      transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1) !important;
+      opacity: 1 !important;
+      will-change: transform;
+    }
+
+    /* Staggered Floating Idle Animations to make the pile feel alive */
+    .collage-container.active .collage-pile .polaroid-card.floating:nth-child(3n):not(.focused):not(.dragging) {
+      animation: float-1-new 4.5s infinite ease-in-out !important;
+    }
+    .collage-container.active .collage-pile .polaroid-card.floating:nth-child(3n+1):not(.focused):not(.dragging) {
+      animation: float-2-new 5.5s infinite ease-in-out !important;
+    }
+    .collage-container.active .collage-pile .polaroid-card.floating:nth-child(3n+2):not(.focused):not(.dragging) {
+      animation: float-3-new 6.5s infinite ease-in-out !important;
+    }
+
+    @keyframes float-1-new {
+      0%, 100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0) scale(1) !important; }
+      50% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(-6px) scale(1) !important; }
+    }
+    @keyframes float-2-new {
+      0%, 100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0) scale(1) !important; }
+      50% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(-4px) translateX(2px) scale(1) !important; }
+    }
+    @keyframes float-3-new {
+      0%, 100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) translateY(0) scale(1) !important; }
+      50% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(calc(var(--rot) + 1deg)) translateY(-8px) scale(1) !important; }
+    }
+
+    .collage-container.active .collage-pile .polaroid-card:hover:not(.focused):not(.dragging) {
+      animation: none !important;
+      z-index: 220 !important;
+      transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1.08) !important;
+      box-shadow: 0 22px 48px rgba(106, 49, 95, 0.24) !important;
+    }
+
+    .collage-container.active .collage-pile .polaroid-card:hover:not(.focused):not(.dragging) img {
+      transform: scale(1.05);
+      filter: saturate(1.08) brightness(1.03);
+    }
+
+    .collage-container.active .collage-pile .polaroid-card.dragging {
+      left: 50% !important;
+      top: 50% !important;
+      opacity: 1 !important;
+      animation: none !important;
+      transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1.04) !important;
+    }
+
+    .collage-container.active .collage-pile .polaroid-card.focused {
+      z-index: 10000 !important;
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(2.2) rotate(0deg) !important;
+      box-shadow: 0 25px 75px rgba(0, 0, 0, 0.45) !important;
+      cursor: zoom-out !important;
+      animation: none !important;
+    }
+
+    .collage-container.active .collage-pile .polaroid-card.focused .polaroid-caption {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      font-size: 1.45rem !important;
+      line-height: 1.35 !important;
+      margin-top: 10px !important;
+    }
+
+    @media (max-width: 720px) {
+      .collage-container.active .collage-pile .polaroid-card.focused {
+        transform: translate(-50%, -50%) scale(2.8) rotate(0deg) !important;
+      }
+      .collage-container.active .collage-pile .polaroid-card.focused .polaroid-caption {
+        font-size: 1.15rem !important;
+        margin-top: 6px !important;
+      }
+    }
+
+    /* Present v2: flatter, chunkier, with a longer squashy jiggle. */
+    .present-container,
+    .letter-present-wrapper .present-container {
+      width: 178px !important;
+      height: 178px !important;
+      display: grid !important;
+      place-items: center !important;
+      perspective: none !important;
+      transform-style: flat !important;
+    }
+
+    .letter-present-wrapper .present-container {
+      width: 218px !important;
+      height: 218px !important;
+    }
+
+    .present-cube,
+    .letter-present-wrapper .present-cube {
+      position: relative !important;
+      width: 126px !important;
+      height: 116px !important;
+      margin-top: 34px !important;
+      transform: translateY(0) rotate(0deg) !important;
+      transform-style: flat !important;
+      transform-origin: 50% 88% !important;
+      animation: giftFloatBetter 2.9s ease-in-out infinite !important;
+      filter: drop-shadow(0 20px 24px rgba(106, 49, 95, 0.2));
+    }
+
+    .letter-present-wrapper .present-cube {
+      width: 154px !important;
+      height: 138px !important;
+    }
+
+    .present-container:hover .present-cube,
+    .interactive-present .present-cube:hover:not(.jiggle):not(.open) {
+      transform: translateY(-6px) rotate(-1deg) scale(1.035) !important;
+      filter: drop-shadow(0 26px 30px rgba(233, 95, 158, 0.24)) !important;
+    }
+
+    .cube-face {
+      display: none !important;
+    }
+
+    .cube-face-front,
+    .cube-face-top {
+      display: block !important;
+      position: absolute !important;
+      left: 0 !important;
+      width: 100% !important;
+      transform: none !important;
+      filter: none !important;
+      border: 2px solid rgba(106, 49, 95, 0.42) !important;
+      box-sizing: border-box !important;
+    }
+
+    .cube-face-front {
+      bottom: 0 !important;
+      height: 82% !important;
+      border-radius: 10px 10px 12px 12px !important;
+      background:
+        linear-gradient(90deg, transparent 0 40%, #FFE57A 40% 58%, transparent 58%),
+        linear-gradient(180deg, #FF94BF 0%, #E95F9E 62%, #D94B8E 100%) !important;
+      box-shadow:
+        inset 0 10px 18px rgba(255, 255, 255, 0.22),
+        inset 0 -10px 16px rgba(106, 49, 95, 0.12),
+        0 14px 26px rgba(106, 49, 95, 0.17) !important;
+    }
+
+    .cube-face-front::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 45%;
+      width: 100%;
+      height: 16px;
+      background: linear-gradient(90deg, #F5CD43, #FFF09B, #F5CD43);
+      border-top: 2px solid rgba(106, 49, 95, 0.24);
+      border-bottom: 2px solid rgba(106, 49, 95, 0.24);
+      box-sizing: border-box;
+    }
+
+    .cube-face-top {
+      top: 0 !important;
+      height: 30% !important;
+      z-index: 3 !important;
+      border-radius: 12px 12px 8px 8px !important;
+      background:
+        linear-gradient(90deg, transparent 0 40%, #FFE57A 40% 58%, transparent 58%),
+        linear-gradient(180deg, #FFC0D8 0%, #F47CAD 100%) !important;
+      box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.28), 0 8px 14px rgba(106, 49, 95, 0.14) !important;
+    }
+
+    .cube-bow {
+      position: absolute !important;
+      left: 50% !important;
+      top: -44px !important;
+      width: 104px !important;
+      height: 72px !important;
+      transform: translateX(-50%) !important;
+      transform-style: flat !important;
+      z-index: 5 !important;
+      pointer-events: none;
+    }
+
+    .letter-present-wrapper .cube-bow {
+      top: -52px !important;
+      width: 124px !important;
+      height: 84px !important;
+    }
+
+    .bow-loop-3d,
+    .bow-knot-3d,
+    .bow-tail-3d {
+      display: block !important;
+      position: absolute !important;
+      background: linear-gradient(135deg, #FFF09B 0%, #FFE57A 46%, #F5C943 100%) !important;
+      border: 2px solid rgba(106, 49, 95, 0.36) !important;
+      box-sizing: border-box !important;
+      box-shadow: inset 0 6px 10px rgba(255, 255, 255, 0.28);
+    }
+
+    .bow-loop-3d {
+      top: 6px !important;
+      width: 44px !important;
+      height: 38px !important;
+      border-radius: 52% 52% 46% 46% !important;
+    }
+
+    .loop-left {
+      left: 7px !important;
+      transform: rotate(-30deg) skewX(-5deg) !important;
+      transform-origin: right bottom !important;
+    }
+
+    .loop-right {
+      right: 7px !important;
+      transform: rotate(30deg) skewX(5deg) !important;
+      transform-origin: left bottom !important;
+    }
+
+    .bow-knot-3d {
+      left: 50% !important;
+      top: 27px !important;
+      width: 26px !important;
+      height: 24px !important;
+      border-radius: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 6 !important;
+    }
+
+    .bow-tail-3d {
+      top: 48px !important;
+      width: 20px !important;
+      height: 30px !important;
+      border-radius: 5px 5px 8px 8px !important;
+    }
+
+    .tail-left {
+      left: 37px !important;
+      transform: rotate(15deg) !important;
+    }
+
+    .tail-right {
+      right: 37px !important;
+      transform: rotate(-15deg) !important;
+    }
+
+    .present-cube.jiggle,
+    .present-container:active .present-cube {
+      animation: giftJiggleBetter 780ms cubic-bezier(0.3, 1.65, 0.45, 1) both !important;
+    }
+
+    .present-cube.open {
+      animation: none !important;
+      transform: translateY(-12px) rotate(2deg) scale(0.78) !important;
+      opacity: 0;
+      transition: transform 520ms ease, opacity 520ms ease;
+    }
+
+    @keyframes giftFloatBetter {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(-0.8deg); }
+    }
+
+    @keyframes giftJiggleBetter {
+      0%, 100% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); }
+      8% { transform: translateX(-7px) translateY(2px) rotate(-6deg) scale(1.08, 0.9); }
+      18% { transform: translateX(8px) translateY(-5px) rotate(7deg) scale(0.94, 1.1); }
+      30% { transform: translateX(-9px) translateY(1px) rotate(-7deg) scale(1.06, 0.94); }
+      44% { transform: translateX(7px) translateY(-4px) rotate(6deg) scale(0.96, 1.06); }
+      58% { transform: translateX(-5px) translateY(1px) rotate(-4deg) scale(1.04, 0.97); }
+      72% { transform: translateX(4px) translateY(-2px) rotate(3deg) scale(0.99, 1.03); }
+      86% { transform: translateX(-2px) translateY(0) rotate(-1.5deg) scale(1.01); }
+    }
+
+    /* Ambient Background Glow Blobs */
+    .ambient-glow {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      mix-blend-mode: multiply;
+      animation: floatBlob 15s infinite ease-in-out;
+    }
+
+    .glow-1 {
+      width: min(350px, 80vw);
+      height: min(350px, 80vw);
+      background: #FF94BF;
+      top: 15%;
+      left: 10%;
+    }
+
+    .glow-2 {
+      width: min(450px, 95vw);
+      height: min(450px, 95vw);
+      background: #FFE57A;
+      bottom: 10%;
+      right: 5%;
+      animation-delay: -5s;
+      animation-duration: 18s;
+    }
+
+    .glow-3 {
+      width: min(300px, 70vw);
+      height: min(300px, 70vw);
+      background: #A9DAFF;
+      bottom: 40%;
+      left: 45%;
+      animation-delay: -10s;
+      animation-duration: 22s;
+    }
+
+    @keyframes floatBlob {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+      }
+      66% {
+        transform: translate(-20px, 30px) scale(0.95);
+      }
+    }
+
+
+
+    /* Golden Botanical Corner Art styling */
+    .corner-ornament {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.55;
+      transition: opacity 0.5s ease;
+    }
+
+    .ornament-top-left { top: 15px; left: 15px; }
+    .ornament-top-right { top: 15px; right: 15px; transform: scaleX(-1); }
+    .ornament-bottom-left { bottom: 15px; left: 15px; transform: scaleY(-1); }
+    .ornament-bottom-right { bottom: 15px; right: 15px; transform: scale(-1); }
+
+    .corner-ornament .sway-wrapper {
+      animation: ornamentFloat 8s infinite ease-in-out;
+      transform-origin: center;
+    }
+
+    @keyframes ornamentFloat {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(3deg) scale(1.05); }
+    }
+
+    /* Cursor Sparkle Trail styling */
+    .cursor-sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      user-select: none;
+      animation: sparkleFade 0.85s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      will-change: transform, opacity;
+      text-shadow: 0 0 6px currentColor;
+    }
+
+    @keyframes sparkleFade {
+      0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 1;
+      }
+      25% {
+        transform: translate(-50%, -50%) scale(1.3) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0) rotate(220deg);
+        opacity: 0;
+      }
+    }
+
+    /* Flower Petals falling background animation */
+    .petal-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .petal {
+      position: absolute;
+      background: linear-gradient(135deg, rgba(255, 192, 203, 0.55) 0%, rgba(255, 175, 189, 0.45) 100%);
+      border-radius: 15px 0 15px 15px;
+      transform-origin: center;
+      animation: floatPetal 12s linear infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes floatPetal {
+      0% {
+        transform: translate(0, -20px) rotate(0deg) scale(0.7);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--sway-x), 105vh) rotate(var(--rot-z)) scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    /* Floating Sparkles */
+    .sparkles-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .floating-sparkle {
+      position: absolute;
+      color: #FFE57A;
+      font-size: 20px;
+      opacity: 0.4;
+      text-shadow: 0 0 10px rgba(255, 229, 122, 0.6);
+      animation: floatSparkle 5s infinite ease-in-out;
+    }
+
+    .sparkle-1 { top: 20%; left: 25%; animation-delay: 0s; }
+    .sparkle-2 { top: 15%; right: 25%; animation-delay: 1.5s; font-size: 24px; }
+    .sparkle-3 { bottom: 25%; left: 20%; animation-delay: 3s; font-size: 16px; }
+    .sparkle-4 { bottom: 30%; right: 28%; animation-delay: 4.5s; }
+
+    @keyframes floatSparkle {
+      0%, 100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 0.3;
+      }
+      50% {
+        transform: translateY(-15px) scale(1.25) rotate(180deg);
+        opacity: 0.7;
+      }
+    }
+
+    /* Unified Capsule Style for Top App Bar Buttons */
+    .app-bar-btn {
+      position: absolute;
+      top: 40px;
+      background: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(106, 49, 95, 0.12) !important;
+      color: #6A315F !important;
+      font-family: "Montserrat", sans-serif !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1.5px !important;
+      padding: 8px 16px !important;
+      border-radius: 999px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 6px 16px rgba(106, 49, 95, 0.08) !important;
+      transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.25s ease, box-shadow 0.25s ease !important;
+      z-index: 1100;
+    }
+
+    .app-bar-btn:hover {
+      background: #ffffff !important;
+      box-shadow: 0 10px 24px rgba(106, 49, 95, 0.14) !important;
+    }
+
+    .app-bar-btn-left {
+      left: 45px;
+    }
+
+    .app-bar-btn-left:hover {
+      transform: translateX(-3px) !important;
+    }
+
+    .app-bar-btn-right {
+      right: 45px;
+    }
+
+    .app-bar-btn-right:hover {
+      transform: translateX(3px) !important;
+    }
+
+    @media (max-width: 720px) {
+      .app-bar-btn {
+        top: 24px;
+        padding: 6px 12px !important;
+        font-size: 9px !important;
+        box-shadow: 0 4px 12px rgba(106, 49, 95, 0.06) !important;
+      }
+      .app-bar-btn-left {
+        left: 24px;
+      }
+      .app-bar-btn-right {
+        right: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -25,19 +1156,90 @@
       <path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.03c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
     </svg>
   </button>
+  <audio id="background-audio" preload="auto" loop></audio>
 
-  <!-- SECTION 1: LANDING PAGE -->
   <section class="section section-landing" id="section-landing">
+    <!-- Golden Botanical Corner Art Ornaments -->
+    <div class="corner-ornament ornament-top-left">
+      <div class="sway-wrapper">
+        <svg viewBox="0 0 100 100" width="120" height="120">
+          <path d="M0,0 Q30,10 60,60 T100,100" fill="none" stroke="#FFE57A" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M20,10 Q35,5 30,20 Q15,20 20,10" fill="#FFE57A" />
+          <path d="M40,28 Q55,23 50,38 Q35,38 40,28" fill="#FFE57A" />
+          <path d="M60,48 Q75,43 70,58 Q55,58 60,48" fill="#FFE57A" />
+          <path d="M10,25 Q5,38 18,32 Q18,20 10,25" fill="#FFE57A" />
+          <path d="M28,45 Q23,58 36,52 Q36,40 28,45" fill="#FFE57A" />
+          <path d="M48,65 Q43,78 56,72 Q56,60 48,65" fill="#FFE57A" />
+        </svg>
+      </div>
+    </div>
+    <div class="corner-ornament ornament-top-right">
+      <div class="sway-wrapper">
+        <svg viewBox="0 0 100 100" width="120" height="120">
+          <path d="M0,0 Q30,10 60,60 T100,100" fill="none" stroke="#FFE57A" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M20,10 Q35,5 30,20 Q15,20 20,10" fill="#FFE57A" />
+          <path d="M40,28 Q55,23 50,38 Q35,38 40,28" fill="#FFE57A" />
+          <path d="M60,48 Q75,43 70,58 Q55,58 60,48" fill="#FFE57A" />
+          <path d="M10,25 Q5,38 18,32 Q18,20 10,25" fill="#FFE57A" />
+          <path d="M28,45 Q23,58 36,52 Q36,40 28,45" fill="#FFE57A" />
+          <path d="M48,65 Q43,78 56,72 Q56,60 48,65" fill="#FFE57A" />
+        </svg>
+      </div>
+    </div>
+    <div class="corner-ornament ornament-bottom-left">
+      <div class="sway-wrapper">
+        <svg viewBox="0 0 100 100" width="120" height="120">
+          <path d="M0,0 Q30,10 60,60 T100,100" fill="none" stroke="#FFE57A" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M20,10 Q35,5 30,20 Q15,20 20,10" fill="#FFE57A" />
+          <path d="M40,28 Q55,23 50,38 Q35,38 40,28" fill="#FFE57A" />
+          <path d="M60,48 Q75,43 70,58 Q55,58 60,48" fill="#FFE57A" />
+          <path d="M10,25 Q5,38 18,32 Q18,20 10,25" fill="#FFE57A" />
+          <path d="M28,45 Q23,58 36,52 Q36,40 28,45" fill="#FFE57A" />
+          <path d="M48,65 Q43,78 56,72 Q56,60 48,65" fill="#FFE57A" />
+        </svg>
+      </div>
+    </div>
+    <div class="corner-ornament ornament-bottom-right">
+      <div class="sway-wrapper">
+        <svg viewBox="0 0 100 100" width="120" height="120">
+          <path d="M0,0 Q30,10 60,60 T100,100" fill="none" stroke="#FFE57A" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M20,10 Q35,5 30,20 Q15,20 20,10" fill="#FFE57A" />
+          <path d="M40,28 Q55,23 50,38 Q35,38 40,28" fill="#FFE57A" />
+          <path d="M60,48 Q75,43 70,58 Q55,58 60,48" fill="#FFE57A" />
+          <path d="M10,25 Q5,38 18,32 Q18,20 10,25" fill="#FFE57A" />
+          <path d="M28,45 Q23,58 36,52 Q36,40 28,45" fill="#FFE57A" />
+          <path d="M48,65 Q43,78 56,72 Q56,60 48,65" fill="#FFE57A" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Ambient background blobs for rich texture -->
+    <div class="ambient-glow">
+      <div class="glow-blob glow-1"></div>
+      <div class="glow-blob glow-2"></div>
+      <div class="glow-blob glow-3"></div>
+    </div>
+
+
+    
+    <!-- Floating elegant sparkles -->
+    <div class="sparkles-container">
+      <div class="floating-sparkle sparkle-1">✦</div>
+      <div class="floating-sparkle sparkle-2">✦</div>
+      <div class="floating-sparkle sparkle-3">✦</div>
+      <div class="floating-sparkle sparkle-4">✦</div>
+    </div>
+
     <!-- Top Left: From Ponti -->
     <div class="corner-text top-left">
-      <span class="header-label">FROM PONTI</span>
+      <span class="header-label">FROM VITARA</span>
       <span class="header-line"></span>
     </div>
 
     <!-- Top Right: To Mama -->
     <div class="corner-text top-right">
       <span class="header-line"></span>
-      <span class="header-label">TO MAMA</span>
+      <span class="header-label">TO MAMAE</span>
     </div>
 
     <!-- Giant Poster Background Text -->
@@ -49,7 +1251,7 @@
         
         <!-- Card Front: Mom's Portrait Cutout -->
         <div class="card-front" id="card-front">
-          <img src="assets/mom_portrait_white_bg.png" alt="Mom's Portrait" class="mom-photo-cutout" id="mom-photo">
+          <img src="assets/mama.png" alt="Mama" class="mom-photo-cutout" id="mom-photo">
           <p class="click-prompt" id="click-prompt">click the photo for the experience</p>
         </div>
 
@@ -90,10 +1292,16 @@
       </div>
     </div>
 
+    <!-- Bottom Left: Celebrating -->
+    <div class="corner-text bottom-left">
+      <span class="header-label">CELEBRATING MAMA</span>
+      <span class="header-line"></span>
+    </div>
+
     <!-- Bottom Right: Date -->
     <div class="corner-text bottom-right">
       <span class="header-line"></span>
-      <span class="header-label">29/05/1970</span>
+      <span class="header-label">06/06/1971</span>
     </div>
     
 
@@ -102,16 +1310,16 @@
   <!-- Scattered Polaroid Collage Overlay (Revealed after clicking the birthday card) -->
   <div class="collage-container hidden" id="collage-container">
     
-    <!-- Back to Greeting Card Button (Moved to top-left, borderless arrow style) -->
-    <button class="btn-gather" id="btn-gather" aria-label="Go Back to Greeting Card">
+    <!-- Back to Greeting Card Button -->
+    <button class="app-bar-btn app-bar-btn-left" id="btn-gather" aria-label="Go Back to Greeting Card">
       <svg class="arrow-left-icon" viewBox="0 0 24 24" width="16" height="16">
         <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
       <span>back</span>
     </button>
 
-    <!-- Next Button (Balanced in the top-right) -->
-    <button class="btn-letter" id="btn-open-letter" aria-label="Read Letter for Mom">
+    <!-- Next Button -->
+    <button class="app-bar-btn app-bar-btn-right" id="btn-open-letter" aria-label="Read Letter for Mom">
       <span>next</span>
       <svg class="arrow-right-icon" viewBox="0 0 24 24" width="16" height="16">
         <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
@@ -123,37 +1331,114 @@
       
       <div class="polaroid-card" data-index="0">
         <div class="polaroid-img-wrapper">
-          <img src="assets/mom_flowers.png" alt="Flowers for Mom">
+          <img src="assets/foto1.jpeg" alt="Birthday memory photo 1" loading="lazy">
         </div>
-        <div class="polaroid-caption">A beautiful bloom for a beautiful mom.</div>
+        <div class="polaroid-caption">A sweet moment with Mama.</div>
       </div>
       
       <div class="polaroid-card" data-index="1">
         <div class="polaroid-img-wrapper">
-          <img src="assets/birthday_cake.png" alt="Birthday Cake">
+          <img src="assets/foto2.jpeg" alt="Birthday memory photo 2" loading="lazy">
         </div>
-        <div class="polaroid-caption">Sweet celebrations and delicious wishes.</div>
+        <div class="polaroid-caption">Wrapped in family warmth.</div>
       </div>
       
       <div class="polaroid-card" data-index="2">
         <div class="polaroid-img-wrapper">
-          <img src="assets/family_walk.png" alt="Family Walk">
+          <img src="assets/foto3.jpeg" alt="Birthday memory photo 3" loading="lazy">
         </div>
-        <div class="polaroid-caption">Warm steps, hand in hand.</div>
+        <div class="polaroid-caption">Little laughs, big love.</div>
       </div>
       
       <div class="polaroid-card" data-index="3">
         <div class="polaroid-img-wrapper">
-          <img src="assets/mom_cooking.png" alt="Mom Cooking">
+          <img src="assets/foto4.jpeg" alt="Birthday memory photo 4" loading="lazy">
         </div>
-        <div class="polaroid-caption">Baking love, laughter, and sweet moments.</div>
+        <div class="polaroid-caption">A memory worth holding.</div>
       </div>
       
       <div class="polaroid-card" data-index="4">
         <div class="polaroid-img-wrapper">
-          <img src="assets/mom_garden.png" alt="Mom's Garden">
+          <img src="assets/foto5.jpeg" alt="Birthday memory photo 5" loading="lazy">
         </div>
-        <div class="polaroid-caption">Peace and joy in the quiet garden.</div>
+        <div class="polaroid-caption">Always loved, always celebrated.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="5">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto6.jpeg" alt="Birthday memory photo 6" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Joy in every frame.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="6">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto7.jpeg" alt="Birthday memory photo 7" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Our favorite kind of day.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="7">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto8.jpeg" alt="Birthday memory photo 8" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Made brighter by Mama.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="8">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto9.jpeg" alt="Birthday memory photo 9" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Soft smiles, full hearts.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="9">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto10.jpeg" alt="Birthday memory photo 10" loading="lazy">
+        </div>
+        <div class="polaroid-caption">A beautiful chapter.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="10">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto11.jpeg" alt="Birthday memory photo 11" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Forever thankful for you.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="11">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto12.jpeg" alt="Birthday memory photo 12" loading="lazy">
+        </div>
+        <div class="polaroid-caption">The heart of home.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="12">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto13.jpeg" alt="Birthday memory photo 13" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Birthday glow all around.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="13">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto14.jpeg" alt="Birthday memory photo 14" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Moments we treasure.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="14">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto15.jpeg" alt="Birthday memory photo 15" loading="lazy">
+        </div>
+        <div class="polaroid-caption">So much love here.</div>
+      </div>
+
+      <div class="polaroid-card" data-index="15">
+        <div class="polaroid-img-wrapper">
+          <img src="assets/foto16.jpeg" alt="Birthday memory photo 16" loading="lazy">
+        </div>
+        <div class="polaroid-caption">Happy birthday, Mama.</div>
       </div>
       
     </div>
@@ -162,7 +1447,7 @@
   <!-- Private Message Letter Overlay -->
   <div class="letter-container hidden" id="letter-container">
     <!-- Close Letter Button -->
-    <button class="btn-gather" id="btn-close-letter" aria-label="Back to Memories">
+    <button class="app-bar-btn app-bar-btn-left" id="btn-close-letter" aria-label="Back to Memories">
       <svg class="arrow-left-icon" viewBox="0 0 24 24" width="16" height="16">
         <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
@@ -172,7 +1457,7 @@
     <!-- Present Box to unwrap before showing letter -->
     <div class="letter-present-wrapper" id="letter-present-wrapper">
       <h3 class="letter-present-hint" id="letter-present-hint">
-        A special gift for Mama...<br><span>Click the gift to open!</span>
+        A special gift for Mamae...<br><span>Click the gift to open!</span>
       </h3>
       <div class="present-container interactive-present" id="letter-present-box">
         <div class="present-cube">
@@ -198,23 +1483,37 @@
     <div class="letter-card" id="letter-card">
       <svg class="letter-svg-bg" id="letter-svg-bg" viewBox="-20 -20 540 640" preserveAspectRatio="none">
         <!-- Inner straight-edged card border -->
-        <rect x="0" y="0" width="500" height="600" rx="6" fill="white" stroke="#102A43" stroke-width="3" />
+        <rect x="0" y="0" width="500" height="600" rx="6" fill="white" stroke="#6A315F" stroke-width="3" />
         <!-- Outer wavy/scalloped paper outline (generated dynamically in JS) -->
-        <path id="wavy-border-path" fill="none" stroke="#102A43" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <path id="wavy-border-path" fill="none" stroke="#E95F9E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
       
       <div class="letter-content">
         <h2 class="letter-title">A Letter for Mama</h2>
         <div class="letter-text">
           <p>Dearest Mama,</p>
-          <p style="margin-top: 12px;">Happy Birthday to the most wonderful mother in the world! Thank you for your endless love, your patience, and the warmth you bring to our lives.</p>
-          <p style="margin-top: 12px;">Your smile lights up our days, and your loving heart fills our home. Today is all about celebrating you, your journey, and the beautiful memories we share together.</p>
-          <p style="margin-top: 12px;">We are so grateful for everything you do. May this year bring you as much joy, peace, and happiness as you have always given us.</p>
-          <p style="margin-top: 24px; font-weight: 600;">With all our love,</p>
-          <p style="margin-top: 6px; font-style: italic;">From Ponti</p>
+          <p style="margin-top: 12px;">Selamat ulang tahun, Mama.<br>Semoga Mama selalu diberikan kesehatan, badan yang bugar, umur yang panjang dan penuh keberkahan. Semoga Mama dijauhkan dari segala penyakit, selalu dilindungi Allah di setiap langkah, dan selalu diberikan hati yang tenang serta bahagia.</p>
+          <p style="margin-top: 12px;">sekalian buat bapake</p>
+          <p style="margin-top: 12px;">Semoga Ayah juge selalu diberikan kesehatan, kekuatan, dan perlindungan yang sama. Janlupa olahraga diket, kurangi marah2 😇.</p>
+          <p style="margin-top: 12px;">Semoga doa-doa baik untuk Mama dan Ayah selalu Allah kabulkan. Aamiin.</p>
+          <p style="margin-top: 24px; font-weight: 600;">From VITARA</p>
+        </div>
+        <div class="letter-actions">
+          <button class="letter-next-button" type="button" id="btn-open-thank-you">next</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Final Thank You Page -->
+  <div class="thank-you-container hidden" id="thank-you-container">
+    <button class="app-bar-btn app-bar-btn-left" type="button" id="btn-close-thank-you">
+      <svg class="arrow-left-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      <span>back</span>
+    </button>
+    <h1 class="thank-you-title">Thank you</h1>
   </div>
 
   <!-- JavaScript -->

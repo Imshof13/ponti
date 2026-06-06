@@ -1,4 +1,55 @@
-// Web Audio API Music Box Synthesizer for "Happy Birthday" and Ambiance
+const BACKGROUND_MUSIC_SOURCE = 'petra_sihombing.mpeg';
+
+// HTML audio controller for the background music track.
+class BackgroundTrack {
+  constructor(audioId, source) {
+    this.audio = document.getElementById(audioId);
+    this.source = source;
+    this.isPlaying = false;
+
+    if (this.audio && this.source && !this.audio.currentSrc) {
+      const sourceEl = this.audio.querySelector('source');
+      if (sourceEl) {
+        sourceEl.src = this.source;
+      } else {
+        this.audio.src = this.source;
+      }
+      this.audio.load();
+    }
+  }
+
+  async start() {
+    if (!this.audio) return false;
+    this.audio.volume = 0.45;
+
+    try {
+      await this.audio.play();
+      this.isPlaying = true;
+    } catch (error) {
+      this.isPlaying = false;
+      console.warn('Background music could not start:', error);
+    }
+
+    return this.isPlaying;
+  }
+
+  pause() {
+    if (!this.audio) return;
+    this.audio.pause();
+    this.isPlaying = false;
+  }
+
+  toggle() {
+    if (this.isPlaying) {
+      this.pause();
+      return Promise.resolve(false);
+    }
+
+    return this.start();
+  }
+}
+
+// Web Audio API Music Box Synthesizer for small celebratory chimes
 class MusicBox {
   constructor() {
     this.audioCtx = null;
@@ -16,21 +67,8 @@ class MusicBox {
       'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00
     };
 
-    this.birthdayMelody = [
-      ['C4', 0.75], ['C4', 0.25], ['D4', 1.0], ['C4', 1.0], ['F4', 1.0], ['E4', 2.0],
-      ['C4', 0.75], ['C4', 0.25], ['D4', 1.0], ['C4', 1.0], ['G4', 1.0], ['F4', 2.0],
-      ['C4', 0.75], ['C4', 0.25], ['C5', 1.0], ['A4', 1.0], ['F4', 1.0], ['E4', 1.0], ['D4', 2.0],
-      ['Bb4', 0.75], ['Bb4', 0.25], ['A4', 1.0], ['F4', 1.0], ['G4', 1.0], ['F4', 3.0]
-    ];
-
-    this.ambianceMelody = [
-      ['F4', 1], ['A4', 1], ['C5', 1], ['F5', 1.5], ['C5', 0.5], ['A4', 1],
-      ['E4', 1], ['G4', 1], ['C5', 1], ['E5', 1.5], ['C5', 0.5], ['G4', 1],
-      ['D4', 1], ['F4', 1], ['A4', 1], ['D5', 1.5], ['A4', 0.5], ['F4', 1],
-      ['Bb4', 1], ['D4', 1], ['F4', 1], ['Bb4', 1.5], ['F4', 0.5], ['D4', 1],
-      ['F4', 1], ['A4', 1], ['C5', 1], ['F5', 1.5], ['C5', 0.5], ['A4', 1],
-      ['E4', 1], ['G4', 1], ['C5', 1], ['E5', 1.5], ['C5', 0.5], ['G4', 1],
-      ['F4', 1], ['A4', 1], ['C5', 1], ['F5', 3],
+    this.sparkleMelody = [
+      ['C5', 0.18], ['E5', 0.18], ['G5', 0.18], ['A5', 0.35]
     ];
   }
 
@@ -121,13 +159,6 @@ class MusicBox {
     if (this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
-    
-    this.isPlaying = true;
-    this.playMelody(this.birthdayMelody, false, () => {
-      if (this.isPlaying) {
-        this.playMelody(this.ambianceMelody, true);
-      }
-    });
   }
 
   stop() {
@@ -152,6 +183,16 @@ class MusicBox {
     }
     return this.isPlaying;
   }
+
+  chime(noteName, duration = 0.18) {
+    this.start();
+    this.playNote(noteName, this.audioCtx.currentTime, duration);
+  }
+
+  sparkle() {
+    this.start();
+    this.playMelody(this.sparkleMelody, false);
+  }
 }
 
 // Canvas-Based Confetti Particle System
@@ -163,13 +204,13 @@ class ConfettiSystem {
     this.isAnimating = false;
     
     this.colors = [
-      '#A0C4FF', // Soft pastel blue
-      '#98F5E1', // Soft pastel mint/cyan
-      '#BCCCDC', // Soft dusty blue
-      '#EBF4F6', // Ice blue pastel
-      '#FFD166', // Soft pastel yellow/gold shimmer
-      '#D6A2E8', // Soft pastel lavender
-      '#FFADAD'  // Soft pastel peach/pink
+      '#FFD1DC',
+      '#A9DAFF',
+      '#B99BFF',
+      '#FFE57A',
+      '#FFB18A',
+      '#E95F9E',
+      '#7DDFFF'
     ];
 
     window.addEventListener('resize', () => this.resizeCanvas());
@@ -282,33 +323,36 @@ function applyChromaKeyRemoval(imgId) {
   if (!img) return;
 
   const processImage = () => {
-    if (img.src.startsWith('data:')) return; // Prevent infinite loop or double execution
-    
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    
-    ctx.drawImage(img, 0, 0);
-    
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imgData.data;
-    
-    // Key out pixels that are very close to white
-    // R, G, B > 240 is perfect for solid studio white backgrounds
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
+    try {
+      if (img.src.startsWith('data:') || img.src.includes('mom_portrait_transparent.png') || img.src.includes('mama.png')) return;
       
-      if (r > 242 && g > 242 && b > 242) {
-        data[i+3] = 0; // Set alpha to 0 (transparent)
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      
+      ctx.drawImage(img, 0, 0);
+      
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      
+      // Key out pixels that are very close to white.
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i+1];
+        const b = data[i+2];
+        
+        if (r > 242 && g > 242 && b > 242) {
+          data[i+3] = 0;
+        }
       }
+      
+      ctx.putImageData(imgData, 0, 0);
+      img.src = canvas.toDataURL();
+    } catch (error) {
+      console.warn('Portrait background removal skipped:', error);
     }
-    
-    ctx.putImageData(imgData, 0, 0);
-    img.src = canvas.toDataURL();
   };
 
   img.addEventListener('load', processImage, { once: true });
@@ -335,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGather = document.getElementById('btn-gather');
 
   // Music & Confetti
+  const backgroundMusic = new BackgroundTrack('background-audio', BACKGROUND_MUSIC_SOURCE);
   const synth = new MusicBox();
   const confetti = new ConfettiSystem('confetti-canvas');
   let cardFlipped = false;
@@ -355,10 +400,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  musicToggle.addEventListener('click', () => {
-    const isPlaying = synth.toggle();
+  musicToggle.addEventListener('click', async () => {
+    const isPlaying = await backgroundMusic.toggle();
     updateMusicIcon(isPlaying);
   });
+
+  function celebrateGift(presentElement, burstCount = 12) {
+    const container = presentElement.closest('.present-container') || presentElement;
+    const sparkleColors = ['#FFD1DC', '#A9DAFF', '#B99BFF', '#FFE57A', '#FFB18A', '#E95F9E'];
+
+    container.classList.remove('celebrating');
+    container.offsetWidth;
+    container.classList.add('celebrating');
+
+    for (let i = 0; i < burstCount; i++) {
+      const sparkle = document.createElement('span');
+      const angle = (Math.PI * 2 * i) / burstCount + Math.random() * 0.45;
+      const distance = 54 + Math.random() * 48;
+      sparkle.className = 'gift-sparkle';
+      sparkle.style.setProperty('--sparkle-x', `${Math.cos(angle) * distance}px`);
+      sparkle.style.setProperty('--sparkle-y', `${Math.sin(angle) * distance}px`);
+      sparkle.style.setProperty('--sparkle-color', sparkleColors[i % sparkleColors.length]);
+      container.appendChild(sparkle);
+      sparkle.addEventListener('animationend', () => sparkle.remove(), { once: true });
+    }
+
+    setTimeout(() => container.classList.remove('celebrating'), 1000);
+  }
 
   // Step 1: Click Card Front to Flip Card and Start Confetti/Music
   cardInner.addEventListener('click', (e) => {
@@ -378,10 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Flip card
     cardInner.classList.add('flipped');
 
-    // 2. Play Audio synthesizer
+    // 2. Play background track and prepare small chimes
+    backgroundMusic.start().then(updateMusicIcon);
     synth.start();
     musicToggle.classList.remove('hidden');
-    updateMusicIcon(true);
 
     // 3. Fire Confetti from center of the card
     const cardRect = cardInner.getBoundingClientRect();
@@ -400,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation(); // Stop event bubbling so it doesn't trigger cardBack click
       cardInner.classList.remove('flipped');
       cardFlipped = false;
+      cardBack.querySelector('.present-cube')?.classList.remove('open', 'jiggle');
       
       // Fade back in front instructions
       clickPrompt.classList.remove('hidden');
@@ -419,26 +488,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const cube = cardBack.querySelector('.present-cube');
     
     // Play chime sound (G4)
-    synth.playNote('G4', synth.audioCtx.currentTime, 0.25);
+    synth.chime('G4', 0.25);
     
     // Explode minor confetti from the present center
     const rect = cube.getBoundingClientRect();
     const sourceX = rect.left + rect.width / 2;
     const sourceY = rect.top + rect.height / 2;
     confetti.explode(sourceX, sourceY, 35);
+    celebrateGift(cube, 10);
 
     // Trigger jiggle
     cube.classList.remove('jiggle');
     cube.offsetWidth;
     cube.classList.add('jiggle');
 
-    // Wait for the jiggle to complete before transitioning to polaroids
+    // Let the box anticipate, then open before transitioning to polaroids.
+    setTimeout(() => {
+      cube.classList.remove('jiggle');
+      cube.classList.add('open');
+      confetti.explode(sourceX, sourceY, 70);
+      celebrateGift(cube, 14);
+    }, 780);
+
     setTimeout(() => {
       // Remove jiggle so it's clean if we return later
       cube.classList.remove('jiggle');
 
       // 1. Shrink, rotate, and fade out the landing greeting card wrapper
-      cardWrapper.style.transform = 'scale(0.05) rotate(15deg)';
+      cardWrapper.style.transform = 'perspective(1000px) scale(0.05) rotate(15deg)';
       cardWrapper.style.opacity = '0';
       
       // 2. Fade out the landing section
@@ -451,7 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // 4. Fire the Polaroid Explosion
       explodePolaroids();
-    }, 400);
+    }, 1260);
   });
 
   // Drag and drop state variables
@@ -462,17 +539,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let startTx = 0;
   let startTy = 0;
   let maxZIndex = 100;
+  let lastTouchTime = 0;
 
   // Scatter Polaroids across screen at random positions/angles
   function explodePolaroids() {
     const isMobile = window.innerWidth <= 768;
-    const rangeX = isMobile ? window.innerWidth * 0.35 : window.innerWidth * 0.6;
-    const rangeY = isMobile ? window.innerHeight * 0.4 : window.innerHeight * 0.5;
+    const cardWidth = isMobile ? 120 : 170;
+    const cardHeight = isMobile ? 155 : 205;
+    
+    // Safety padding to ensure cards don't touch screen edges and avoid headers
+    const padX = cardWidth / 2 + 15; 
+    const padY = cardHeight / 2 + 35;
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    // Distribute them evenly across the safe viewport space
+    const rangeX = W - 2 * padX;
+    const rangeY = H - 2 * padY;
 
     polaroids.forEach((card, idx) => {
       const tx = (Math.random() - 0.5) * rangeX;
-      const ty = (Math.random() - 0.5) * rangeY;
-      const rot = (Math.random() - 0.5) * 26; // -13 to +13 degree rotations
+      // Slight offset down on Y to keep away from top-bar buttons
+      const ty = (Math.random() - 0.5) * rangeY + 15;
+      const rot = (Math.random() - 0.5) * 36; // Nice warm scattered angles
       
       card.style.setProperty('--tx', `${tx}px`);
       card.style.setProperty('--ty', `${ty}px`);
@@ -493,6 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         if (collageActive && !card.classList.contains('focused') && !card.classList.contains('dragging')) {
           card.classList.add('floating');
+          card.style.transitionDelay = '';
         }
       }, (idx * 0.08 + 0.8) * 1000);
     });
@@ -501,7 +592,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle Drag-and-Drop + Click Zoom Logic
   polaroids.forEach(card => {
     const startDrag = (e) => {
-      if (card.classList.contains('focused') || !collageActive) return;
+      if (!collageActive) return;
+
+      // Prevent mobile simulated mouse events (ghost clicks) from double-triggering zoom
+      if (e.type === 'touchstart') {
+        lastTouchTime = Date.now();
+      } else if (e.type === 'mousedown' && Date.now() - lastTouchTime < 600) {
+        return;
+      }
 
       // Check if it's touch or mouse
       const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
@@ -526,10 +624,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.addEventListener('mousedown', startDrag);
     card.addEventListener('touchstart', startDrag, { passive: true });
+    card.addEventListener('dragstart', (e) => e.preventDefault());
   });
 
   const onMove = (e) => {
     if (!activeCard) return;
+    if (activeCard.classList.contains('focused')) return;
 
     const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
@@ -538,8 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy = clientY - startY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // If movement is larger than 5px, it is a drag, not a click
-    if (!isDragging && dist > 5) {
+    // If movement is larger than 15px, it is a drag, not a click
+    if (!isDragging && dist > 15) {
       isDragging = true;
       activeCard.classList.add('dragging');
       activeCard.classList.remove('floating');
@@ -626,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Smoothly fly Polaroids back to center card position
     polaroids.forEach((card, idx) => {
       card.style.transitionDelay = `${(polaroids.length - 1 - idx) * 0.08}s`;
-      card.style.transform = 'translate(0, 0) scale(0) rotate(0deg)';
+      card.style.transform = 'translate(-50%, -50%) scale(0) rotate(0deg)';
       card.style.opacity = '0';
     });
 
@@ -643,8 +743,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trigger style recalculation
         sectionLanding.offsetWidth; 
         
-        cardWrapper.style.transform = 'scale(1) rotate(0deg)';
+        cardWrapper.style.transform = 'perspective(1000px) scale(1) rotate(0deg)';
         cardWrapper.style.opacity = '1';
+        cardBack.querySelector('.present-cube')?.classList.remove('open', 'jiggle');
       }, 600);
     }, polaroids.length * 80 + 800);
   });
@@ -653,6 +754,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const letterContainer = document.getElementById('letter-container');
   const btnOpenLetter = document.getElementById('btn-open-letter');
   const btnCloseLetter = document.getElementById('btn-close-letter');
+  const thankYouContainer = document.getElementById('thank-you-container');
+  const btnOpenThankYou = document.getElementById('btn-open-thank-you');
+  const btnCloseThankYou = document.getElementById('btn-close-thank-you');
 
   function initWavyBorder() {
     const width = 500;
@@ -738,8 +842,9 @@ document.addEventListener('DOMContentLoaded', () => {
     letterClicksLeft--;
     
     if (letterClicksLeft === 2) {
-      synth.playNote('C5', synth.audioCtx.currentTime, 0.15);
+      synth.chime('C5', 0.15);
       confetti.explode(sourceX, sourceY, 35);
+      celebrateGift(letterPresentBox, 8);
       letterPresentHint.innerHTML = 'Unwrapping the ribbons...<br><span>Keep clicking! (2 left)</span>';
       
       // Remove jiggle after animation ends to resume floating
@@ -747,10 +852,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!cube.classList.contains('open')) {
           cube.classList.remove('jiggle');
         }
-      }, 400);
+      }, 820);
     } else if (letterClicksLeft === 1) {
-      synth.playNote('E5', synth.audioCtx.currentTime, 0.15);
+      synth.chime('E5', 0.15);
       confetti.explode(sourceX, sourceY, 35);
+      celebrateGift(letterPresentBox, 10);
       letterPresentHint.innerHTML = 'Almost there, Mama...<br><span>Just one more click!</span>';
       
       // Remove jiggle after animation ends to resume floating
@@ -758,19 +864,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!cube.classList.contains('open')) {
           cube.classList.remove('jiggle');
         }
-      }, 400);
+      }, 820);
     } else if (letterClicksLeft === 0) {
-      const now = synth.audioCtx.currentTime;
-      synth.playNote('C5', now, 0.12);
-      synth.playNote('E5', now + 0.08, 0.12);
-      synth.playNote('G5', now + 0.16, 0.12);
-      synth.playNote('A5', now + 0.24, 0.3);
+      synth.sparkle();
       
       // Confetti explosion
       confetti.explode(sourceX, sourceY, 180);
+      celebrateGift(letterPresentBox, 18);
       
       // Update hint text
-      letterPresentHint.innerHTML = 'Tadaaa! 🎉';
+      letterPresentHint.innerHTML = 'Tadaaa!';
       
       // Wait for the 3rd jiggle to complete before opening the box
       setTimeout(() => {
@@ -789,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           letterPresentWrapper.style.display = 'none';
         }, 1400);
-      }, 350);
+      }, 820);
     }
   });
 
@@ -830,4 +933,181 @@ document.addEventListener('DOMContentLoaded', () => {
       letterCard.classList.remove('active');
     }, 600);
   });
+
+  // Final thank you page
+  if (btnOpenThankYou && thankYouContainer) {
+    btnOpenThankYou.addEventListener('click', () => {
+      thankYouContainer.classList.remove('hidden');
+      thankYouContainer.offsetWidth;
+      thankYouContainer.classList.add('active');
+      confetti.explode(window.innerWidth / 2, window.innerHeight * 0.42, 90);
+      synth.sparkle();
+    });
+  }
+
+  if (btnCloseThankYou && thankYouContainer) {
+    btnCloseThankYou.addEventListener('click', () => {
+      thankYouContainer.classList.remove('active');
+      setTimeout(() => {
+        thankYouContainer.classList.add('hidden');
+      }, 600);
+    });
+  }
+
+  // Cursor Sparkle Trail particle generator
+  let lastMouseX = 0;
+  let lastMouseY = 0;
+  const trailThrottling = 8; // min pixels mouse must move before spawning another sparkle
+
+  window.addEventListener('mousemove', (e) => {
+    const dx = e.clientX - lastMouseX;
+    const dy = e.clientY - lastMouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > trailThrottling) {
+      spawnSparkle(e.clientX, e.clientY);
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    }
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const dx = touch.clientX - lastMouseX;
+      const dy = touch.clientY - lastMouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > trailThrottling) {
+        spawnSparkle(touch.clientX, touch.clientY);
+        lastMouseX = touch.clientX;
+        lastMouseY = touch.clientY;
+      }
+    }
+  }, { passive: true });
+
+  const sparkleChars = ['✦', '✧', '★'];
+  const sparkleColors = ['#FFE57A']; // Yellow only
+
+  function spawnSparkle(x, y) {
+    const sparkle = document.createElement('span');
+    sparkle.className = 'cursor-sparkle';
+    sparkle.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+    sparkle.style.color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+    sparkle.style.left = `${x}px`;
+    sparkle.style.top = `${y}px`;
+
+    // Randomize scale
+    const size = 10 + Math.random() * 14;
+    sparkle.style.fontSize = `${size}px`;
+
+    // Randomize translation offset
+    const dx = (Math.random() - 0.5) * 60;
+    const dy = (Math.random() - 0.5) * 60 - 20; // drift slightly upwards
+    sparkle.style.setProperty('--dx', `${dx}px`);
+    sparkle.style.setProperty('--dy', `${dy}px`);
+
+    document.body.appendChild(sparkle);
+
+    sparkle.addEventListener('animationend', () => {
+      sparkle.remove();
+    }, { once: true });
+  }
+
+  // Dynamic Flower Petals background generator
+  function initFlowerPetals() {
+    const landing = document.getElementById('section-landing');
+    if (!landing) return;
+
+    const container = document.createElement('div');
+    container.className = 'petal-container';
+    // Insert behind the main card elements
+    landing.insertBefore(container, landing.firstChild);
+
+    const petalCount = 18;
+    for (let i = 0; i < petalCount; i++) {
+      spawnPetal(container, true);
+    }
+  }
+
+  function spawnPetal(container, initial = false) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+
+    const startX = Math.random() * 100;
+    petal.style.left = `${startX}%`;
+
+    const startY = initial ? (Math.random() * 100) : -5;
+    petal.style.top = initial ? `${startY}%` : `-20px`;
+
+    const size = Math.random() * 10 + 8; // 8px to 18px
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size}px`;
+
+    const gradients = [
+      'linear-gradient(135deg, rgba(255, 192, 203, 0.55) 0%, rgba(255, 175, 189, 0.45) 100%)',
+      'linear-gradient(135deg, rgba(255, 218, 185, 0.6) 0%, rgba(255, 182, 193, 0.45) 100%)',
+      'linear-gradient(135deg, rgba(255, 230, 235, 0.5) 0%, rgba(255, 192, 203, 0.4) 100%)'
+    ];
+    petal.style.background = gradients[Math.floor(Math.random() * gradients.length)];
+
+    const swayX = (Math.random() - 0.5) * 160;
+    const rotZ = 180 + Math.random() * 360;
+    petal.style.setProperty('--sway-x', `${swayX}px`);
+    petal.style.setProperty('--rot-z', `${rotZ}deg`);
+
+    const duration = Math.random() * 8 + 8; // 8s to 16s
+    petal.style.animationDuration = `${duration}s`;
+
+    if (initial) {
+      const delay = Math.random() * -12;
+      petal.style.animationDelay = `${delay}s`;
+    }
+
+    container.appendChild(petal);
+
+    petal.addEventListener('animationiteration', () => {
+      petal.style.left = `${Math.random() * 100}%`;
+      petal.style.top = `-20px`;
+      
+      const newSwayX = (Math.random() - 0.5) * 160;
+      const newRotZ = 180 + Math.random() * 360;
+      petal.style.setProperty('--sway-x', `${newSwayX}px`);
+      petal.style.setProperty('--rot-z', `${newRotZ}deg`);
+    });
+  }
+
+  // 3D Card Tilt (Parallax) interaction
+  function initCardTilt() {
+    const cardWrapper = document.getElementById('card-wrapper');
+    if (!cardWrapper) return;
+
+    window.addEventListener('mousemove', (e) => {
+      // Only tilt if card is visible (not hidden after unboxing)
+      if (cardWrapper.style.opacity === '0') return;
+
+      const rect = cardWrapper.getBoundingClientRect();
+      const cardX = rect.left + rect.width / 2;
+      const cardY = rect.top + rect.height / 2;
+
+      const dx = e.clientX - cardX;
+      const dy = e.clientY - cardY;
+
+      // Soft 3D tilt angles
+      const rotateX = -(dy / window.innerHeight) * 16;
+      const rotateY = (dx / window.innerWidth) * 16;
+
+      cardWrapper.style.transform = `perspective(1000px) scale(1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      if (cardWrapper.style.opacity !== '0') {
+        cardWrapper.style.transform = 'perspective(1000px) scale(1) rotateX(0deg) rotateY(0deg)';
+      }
+    });
+  }
+
+  // Initialize Landing Page animations
+  initFlowerPetals();
+  initCardTilt();
 });
