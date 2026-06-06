@@ -57,7 +57,7 @@ body {
   position: fixed;
   bottom: 95px;
   left: 45px;
-  z-index: 100;
+  z-index: 1600;
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -206,15 +206,13 @@ body {
   transform: rotateY(180deg);
 }
 
-/* Prevent 3D layer overlap and click blocking when flipped */
+/* Prevent click blocking across 3D card faces when flipped */
 .card-inner:not(.flipped) .card-back {
   pointer-events: none !important;
-  visibility: hidden !important;
 }
 
 .card-inner.flipped .card-front {
   pointer-events: none !important;
-  visibility: hidden !important;
 }
 
 .card-front, .card-back {
@@ -586,37 +584,56 @@ body {
 }
 
 @keyframes cube-float {
-  0%, 100% {
-    transform: rotateX(-22deg) rotateY(45deg) translateY(0);
+  0%, 50%, 100% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(0) scale3d(1, 1, 1);
   }
-  50% {
-    transform: rotateX(-22deg) rotateY(45deg) translateY(-10px) scale(1.015);
+  25% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(-10px) scale3d(1.015, 1.015, 1.015);
+  }
+  /* Periodic Idle Jiggle */
+  70% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(0) scale3d(1, 1, 1);
+  }
+  74% {
+    transform: rotateX(-24deg) rotateY(38deg) translateY(1px) scale3d(1.04, 0.96, 1.04);
+  }
+  78% {
+    transform: rotateX(-20deg) rotateY(52deg) translateY(-2px) scale3d(0.96, 1.04, 0.96);
+  }
+  82% {
+    transform: rotateX(-24deg) rotateY(40deg) translateY(1px) scale3d(1.02, 0.98, 1.02);
+  }
+  86% {
+    transform: rotateX(-20deg) rotateY(49deg) translateY(-1px) scale3d(0.99, 1.01, 0.99);
+  }
+  90% {
+    transform: rotateX(-22deg) rotateY(45deg) translateY(0) scale3d(1, 1, 1);
   }
 }
 
 /* Present Jiggle Animation for interactive elements */
 .present-cube.jiggle {
-  animation: cube-jiggle 0.64s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  animation: cube-jiggle 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 @keyframes cube-jiggle {
   0%, 100% {
     transform: rotateX(-22deg) rotateY(45deg) scale3d(1, 1, 1);
   }
-  12% {
-    transform: rotateX(-24deg) rotateY(38deg) translateY(4px) scale3d(1.08, 0.9, 1.08);
+  15% {
+    transform: rotateX(-26deg) rotateY(32deg) translateY(6px) scale3d(1.15, 0.82, 1.15);
   }
-  30% {
-    transform: rotateX(-18deg) rotateY(54deg) translateY(-12px) scale3d(0.92, 1.12, 0.92);
+  35% {
+    transform: rotateX(-16deg) rotateY(58deg) translateY(-15px) scale3d(0.85, 1.18, 0.85);
   }
-  50% {
-    transform: rotateX(-24deg) rotateY(40deg) translateY(0) scale3d(1.04, 0.96, 1.04);
+  55% {
+    transform: rotateX(-25deg) rotateY(38deg) translateY(2px) scale3d(1.08, 0.92, 1.08);
   }
-  70% {
-    transform: rotateX(-20deg) rotateY(50deg) translateY(-4px) scale3d(0.98, 1.03, 0.98);
+  75% {
+    transform: rotateX(-19deg) rotateY(51deg) translateY(-4px) scale3d(0.96, 1.04, 0.96);
   }
-  88% {
-    transform: rotateX(-22deg) rotateY(46deg) scale3d(1.01, 0.99, 1.01);
+  90% {
+    transform: rotateX(-22deg) rotateY(44deg) scale3d(1.02, 0.98, 1.02);
   }
 }
 
@@ -1059,8 +1076,27 @@ body {
 }
 
 .interactive-present .present-cube:hover:not(.jiggle):not(.open) {
-  transform: rotateX(-22deg) rotateY(45deg) translateY(-4px) scale(1.07) !important;
+  animation: cube-hover-jiggle 0.6s infinite ease-in-out !important;
   filter: drop-shadow(0 24px 28px rgba(233, 95, 158, 0.25));
+  cursor: pointer;
+}
+
+@keyframes cube-hover-jiggle {
+  0%, 100% {
+    transform: rotateX(-22deg) rotateY(45deg) scale3d(1.05, 1.05, 1.05);
+  }
+  20% {
+    transform: rotateX(-24deg) rotateY(38deg) translateY(-2px) scale3d(1.05, 1.05, 1.05);
+  }
+  40% {
+    transform: rotateX(-20deg) rotateY(52deg) translateY(-4px) scale3d(1.05, 1.05, 1.05);
+  }
+  60% {
+    transform: rotateX(-24deg) rotateY(41deg) translateY(-2px) scale3d(1.05, 1.05, 1.05);
+  }
+  80% {
+    transform: rotateX(-20deg) rotateY(49deg) translateY(-4px) scale3d(1.05, 1.05, 1.05);
+  }
 }
 
 .letter-svg-bg {

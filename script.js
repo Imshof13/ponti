@@ -540,6 +540,79 @@ document.addEventListener('DOMContentLoaded', () => {
   let startTy = 0;
   let maxZIndex = 100;
   let lastTouchTime = 0;
+  let galleryMotionFrame = null;
+  let lastGalleryMotionTime = 0;
+
+  function getGalleryBounds(card) {
+    const rect = card.getBoundingClientRect();
+    const halfWidth = rect.width / 2 || 85;
+    const halfHeight = rect.height / 2 || 102;
+
+    return {
+      maxX: Math.max(0, window.innerWidth / 2 - halfWidth - 16),
+      maxY: Math.max(0, window.innerHeight / 2 - halfHeight - 24)
+    };
+  }
+
+  function animateGalleryMotion(timestamp) {
+    if (!collageActive) {
+      galleryMotionFrame = null;
+      lastGalleryMotionTime = 0;
+      return;
+    }
+
+    const delta = Math.min(0.05, (timestamp - (lastGalleryMotionTime || timestamp)) / 1000);
+    lastGalleryMotionTime = timestamp;
+
+    polaroids.forEach((card) => {
+      if (card.classList.contains('focused') || card.classList.contains('dragging')) return;
+
+      const bounds = getGalleryBounds(card);
+      let tx = parseFloat(card.style.getPropertyValue('--tx')) || 0;
+      let ty = parseFloat(card.style.getPropertyValue('--ty')) || 0;
+      let vx = card._vx || 0;
+      let vy = card._vy || 0;
+
+      tx += vx * delta;
+      ty += vy * delta;
+
+      if (tx > bounds.maxX) {
+        tx = bounds.maxX;
+        vx = -Math.abs(vx);
+      } else if (tx < -bounds.maxX) {
+        tx = -bounds.maxX;
+        vx = Math.abs(vx);
+      }
+
+      if (ty > bounds.maxY) {
+        ty = bounds.maxY;
+        vy = -Math.abs(vy);
+      } else if (ty < -bounds.maxY) {
+        ty = -bounds.maxY;
+        vy = Math.abs(vy);
+      }
+
+      card._vx = vx;
+      card._vy = vy;
+      card.style.setProperty('--tx', `${tx}px`);
+      card.style.setProperty('--ty', `${ty}px`);
+    });
+
+    galleryMotionFrame = requestAnimationFrame(animateGalleryMotion);
+  }
+
+  function startGalleryMotion() {
+    if (galleryMotionFrame) return;
+    lastGalleryMotionTime = 0;
+    galleryMotionFrame = requestAnimationFrame(animateGalleryMotion);
+  }
+
+  function stopGalleryMotion() {
+    if (!galleryMotionFrame) return;
+    cancelAnimationFrame(galleryMotionFrame);
+    galleryMotionFrame = null;
+    lastGalleryMotionTime = 0;
+  }
 
   // Scatter Polaroids across screen at random positions/angles
   function explodePolaroids() {
@@ -567,6 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.setProperty('--tx', `${tx}px`);
       card.style.setProperty('--ty', `${ty}px`);
       card.style.setProperty('--rot', `${rot}deg`);
+      card._vx = (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 16);
+      card._vy = (Math.random() < 0.5 ? -1 : 1) * (12 + Math.random() * 14);
 
       // Random initial z-index for overlapping
       const zIndex = Math.floor(Math.random() * 20) + 10;
@@ -587,6 +662,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }, (idx * 0.08 + 0.8) * 1000);
     });
+
+    startGalleryMotion();
   }
 
   // Handle Drag-and-Drop + Click Zoom Logic
@@ -712,6 +789,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Step 4: Gather Memories - Animate Polaroids back to center and return to greeting
   btnGather.addEventListener('click', () => {
+    stopGalleryMotion();
+
     // Zoom out any focused card
     document.querySelectorAll('.polaroid-card.focused').forEach(c => {
       c.classList.remove('focused');
